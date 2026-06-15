@@ -29,7 +29,7 @@ export default function Stage2Quiz({ me, state }) {
   const [currentQ, setCurrentQ] = useState(0);
 
   const mySubmitted  = !!state.stage2.answers[me.id];
-  const bothAnswered = state.stage2.answers.A && state.stage2.answers.B;
+  const bothAnswered = state.stage2.answers[state.meta.ida] && state.stage2.answers[state.meta.idb];
 
   if (bothAnswered && state.stage2.result) {
     return (

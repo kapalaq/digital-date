@@ -142,12 +142,12 @@ function WritingPhase({ me, state }) {
             </div>
             {partnerDone ? (
               <>
-                <h3 className="font-headline-md-mobile text-headline-md-mobile text-on-surface mb-xs">Partner is ready!</h3>
+                <h3 className="font-headline-md-mobile text-headline-md-mobile text-on-surface mb-xs">{partnerName} is ready!</h3>
                 <p className="text-secondary/70 max-w-xs">They've locked in {partnerCount} item{partnerCount !== 1 ? "s" : ""}.</p>
               </>
             ) : (
               <>
-                <h3 className="font-headline-md-mobile text-headline-md-mobile text-on-surface mb-xs">Partner is typing…</h3>
+                <h3 className="font-headline-md-mobile text-headline-md-mobile text-on-surface mb-xs">{partnerName} is typing…</h3>
                 <p className="text-secondary/70 max-w-xs">They are currently listing the meals you've cooked for them.</p>
               </>
             )}
@@ -158,8 +158,8 @@ function WritingPhase({ me, state }) {
             </div>
           </div>
           <div className="mt-auto pt-md border-t border-white/10 text-center min-h-[2rem]">
-            {iDone && !partnerDone && <p className="text-sm text-secondary animate-pulse">Waiting for partner to finish…</p>}
-            {!iDone && partnerDone && <p className="text-sm text-primary animate-pulse">Partner is ready! Finish your list.</p>}
+            {iDone && !partnerDone && <p className="text-sm text-secondary animate-pulse">Waiting for {partnerName} to finish…</p>}
+            {!iDone && partnerDone && <p className="text-sm text-primary animate-pulse">{partnerName} is ready! Finish your list.</p>}
           </div>
         </div>
       </main>
@@ -334,7 +334,7 @@ function ReviewPhase({ me, state }) {
                 <div className="h-full bg-secondary rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(202,190,255,0.6)]"
                   style={{ width: `${partnerProgress}%` }} />
               </div>
-              {partnerDone && <p className="text-secondary text-sm mt-sm font-semibold">Partner finished reviewing!</p>}
+              {partnerDone && <p className="text-secondary text-sm mt-sm font-semibold">{partnerName} finished reviewing!</p>}
             </div>
 
             <div className="glass-card rounded-xl p-md flex-1 flex flex-col items-center justify-center text-center min-h-[200px]">
@@ -503,11 +503,11 @@ function ResultsPhase({ me, state }) {
 
         <button onClick={complete} disabled={iComplete}
           className="bg-gradient-to-r from-primary to-primary-container text-on-primary font-title-sm text-title-sm px-xl py-sm rounded-full shadow-[0_0_20px_rgba(255,176,207,0.4)] hover:shadow-[0_0_30px_rgba(255,176,207,0.6)] disabled:opacity-40 transition-all flex items-center gap-sm group">
-          {iComplete ? "Waiting for partner…" : "Next Stage"}
+          {iComplete ? `Waiting for ${partnerName}…` : "Next Stage"}
           {!iComplete && <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>}
         </button>
         {iComplete && !partnerComplete && (
-          <p className="text-sm text-secondary mt-3 animate-pulse">Partner is reviewing results…</p>
+          <p className="text-sm text-secondary mt-3 animate-pulse">{partnerName} is reviewing results…</p>
         )}
       </main>
     </div>

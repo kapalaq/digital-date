@@ -43,6 +43,8 @@ function DynList({ label, items, onChange }) {
 
 export default function Stage2TripPlanner({ me, state }) {
   const sock = getSocket();
+  const { ida, nameA, nameB } = state.meta;
+  const partnerName = me.id === ida ? nameB : nameA;
   const plan = state.stage2.plan;
   const dw   = state.stage2.dontWant;
   const [dontWant, setDontWant] = useState("");
@@ -104,13 +106,13 @@ export default function Stage2TripPlanner({ me, state }) {
                 </ul>
               </div>
               <div>
-                <p className="font-label-caps text-label-caps text-secondary mb-xs">Partner</p>
+                <p className="font-label-caps text-label-caps text-secondary mb-xs">{partnerName}</p>
                 <ul className="flex flex-col gap-1">
                   {dw[me.id === state.meta.ida ? state.meta.idb : state.meta.ida].map((x, i) => <li key={i} className="text-on-surface">{x}</li>)}
                 </ul>
               </div>
             </div>
-          ) : <p className="text-sm text-on-surface-variant">Submitted. Waiting for partner...</p>
+          ) : <p className="text-sm text-on-surface-variant">Submitted. Waiting for {partnerName}...</p>
         ) : (
           <>
             <textarea
@@ -128,7 +130,7 @@ export default function Stage2TripPlanner({ me, state }) {
         )}
         <button onClick={submitPlan} disabled={iSubmittedPlan || !dw.revealed}
           className="mt-md w-full px-8 py-3 rounded-full btn-primary-glow font-bold">
-          {iSubmittedPlan ? "Waiting for partner..." : "Submit full plan"}
+          {iSubmittedPlan ? `Waiting for ${partnerName}...` : "Submit full plan"}
         </button>
       </aside>
 

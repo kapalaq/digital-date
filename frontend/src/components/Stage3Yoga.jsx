@@ -47,8 +47,9 @@ export default function Stage3Yoga({ me, state }) {
     setTimeout(() => { suppress.current = false; }, 400);
   }, [state.stage3.video]);
 
-  const { ida, idb } = state.meta;
-  const partnerId = me.id === ida ? idb : ida;
+  const { ida, idb, nameA, nameB } = state.meta;
+  const partnerId   = me.id === ida ? idb : ida;
+  const partnerName = me.id === ida ? nameB : nameA;
   const confirm = () => getSocket()?.emit("stage3:confirm");
 
   return (
@@ -70,7 +71,7 @@ export default function Stage3Yoga({ me, state }) {
         <div className="flex items-center justify-center gap-md md:gap-xl w-full max-w-2xl">
           {[
             ["You", state.stage3[`${me.id}_done`], "primary", "person"],
-            ["Partner", state.stage3[`${partnerId}_done`], "secondary", "person_outline"],
+            [partnerName, state.stage3[`${partnerId}_done`], "secondary", "person_outline"],
           ].map(([label, done, color, icon], index) => (
             <div key={label} className="contents">
               {index === 1 && (

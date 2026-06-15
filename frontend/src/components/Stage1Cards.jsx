@@ -52,6 +52,7 @@ export default function Stage1Cards({ me, state }) {
 
   const { ida, idb, nameA, nameB } = state.meta;
   const partnerId   = me.id === ida ? idb : ida;
+  const partnerName = me.id === ida ? nameB : nameA;
   const iDone       = state.stage1[`${me.id}_done`];
   const partnerDone = state.stage1[`${partnerId}_done`];
 
@@ -187,7 +188,7 @@ export default function Stage1Cards({ me, state }) {
               <h3 className="font-display-lg-mobile text-display-lg-mobile text-primary mb-xs">{winnerGame}</h3>
               {winnerGame === myGame
                 ? <p className="text-sm text-on-surface-variant mb-md">Your pick wins!</p>
-                : <p className="text-sm text-on-surface-variant mb-md">Partner's pick wins — good sport!</p>
+                : <p className="text-sm text-on-surface-variant mb-md">{partnerName}&apos;s pick wins — good sport!</p>
               }
               <button
                 onClick={() => setSeenWinner(true)}
@@ -207,7 +208,7 @@ export default function Stage1Cards({ me, state }) {
               We both finished this game ✓
             </button>
             {iAcked && !partnerAcked && (
-              <p className="text-sm text-secondary mt-3 animate-pulse">Waiting for partner…</p>
+              <p className="text-sm text-secondary mt-3 animate-pulse">Waiting for {partnerName}…</p>
             )}
           </div>
         )}
@@ -226,7 +227,7 @@ export default function Stage1Cards({ me, state }) {
               <div className="flex justify-center gap-sm mb-md text-sm text-on-surface-variant">
                 <span className="text-primary font-semibold">You: {myGame}</span>
                 <span>vs</span>
-                <span className="text-secondary font-semibold">Partner: {partnerGame}</span>
+                <span className="text-secondary font-semibold">{partnerName}: {partnerGame}</span>
               </div>
               <div className="flex gap-sm justify-center">
                 {RPS_OPTS.map(({ choice, emoji, label }) => (
@@ -253,7 +254,7 @@ export default function Stage1Cards({ me, state }) {
                   <span className="text-primary font-semibold">{myRps ? RPS_OPTS.find(r => r.choice === myRps)?.emoji + " locked" : "choosing…"}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-on-surface-variant">Partner: </span>
+                  <span className="text-on-surface-variant">{partnerName}: </span>
                   <span className="text-secondary font-semibold">{partnerRps ? "✓ locked" : "choosing…"}</span>
                   <span className="w-2 h-2 rounded-full bg-secondary" />
                 </div>
@@ -269,7 +270,7 @@ export default function Stage1Cards({ me, state }) {
               Lock in my choice ✓
             </button>
             {partnerDone && !iDone && (
-              <p className="text-sm text-secondary mt-3 animate-pulse">Partner is ready!</p>
+              <p className="text-sm text-secondary mt-3 animate-pulse">{partnerName} is ready!</p>
             )}
           </>
         )}

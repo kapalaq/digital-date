@@ -11,8 +11,9 @@ export default function Stage4Goals({ me, state }) {
   const sock       = getSocket();
   const myGoals    = state.stage4.goals[me.id];
   const myShared   = state.stage4.sharedGoals[me.id] || [];
-  const { ida, idb } = state.meta;
+  const { ida, idb, nameA, nameB } = state.meta;
   const partnerId  = me.id === ida ? idb : ida;
+  const partnerName = me.id === ida ? nameB : nameA;
   const partnerGoals  = state.stage4.goals[partnerId];
   const partnerShared = state.stage4.sharedGoals[partnerId] || [];
   const partnerAllowsFewer = state.stage4.allowFewer[partnerId];
@@ -138,7 +139,7 @@ export default function Stage4Goals({ me, state }) {
 
             <div className="glass-panel rounded-xl p-md md:p-lg" style={{ borderColor: partnerColor === "primary" ? "rgba(255,176,207,0.3)" : "rgba(202,190,255,0.3)" }}>
               <div className="flex items-center justify-between mb-md">
-                <h2 className={`font-label-caps text-label-caps ${partnerColor === "primary" ? "text-primary" : "text-secondary"}`}>Partner&apos;s Goals</h2>
+                <h2 className={`font-label-caps text-label-caps ${partnerColor === "primary" ? "text-primary" : "text-secondary"}`}>{partnerName}&apos;s Goals</h2>
                 <span className="text-sm text-on-surface-variant">{visiblePartnerGoals.length} shared</span>
               </div>
               <div className="grid grid-cols-1 gap-sm max-h-[28rem] overflow-y-auto pr-1">
