@@ -32,6 +32,11 @@ const GAMES = [
 const COLOR_TEXT = { primary: "text-primary", secondary: "text-secondary", tertiary: "text-tertiary" };
 const COLOR_BG   = { primary: "bg-primary", secondary: "bg-secondary", tertiary: "bg-tertiary" };
 const COLOR_ON   = { primary: "text-on-primary", secondary: "text-on-secondary", tertiary: "text-on-tertiary" };
+const COLOR_BG_CONTAINER = {
+  primary: "bg-primary-container/20",
+  secondary: "bg-secondary-container/20",
+  tertiary: "bg-tertiary-container/20",
+};
 
 export default function Stage1Cards({ me, state }) {
   const [flipped,  setFlipped]  = useState(null);
@@ -53,7 +58,7 @@ export default function Stage1Cards({ me, state }) {
       <header className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-white/15 shadow-[0_0_20px_rgba(255,176,207,0.2)]">
         <div className="flex justify-between items-center px-safe-margin h-16 max-w-[600px] mx-auto">
           {/* Fix #1: menu icon button */}
-          <button className="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-on-surface">
+          <button aria-label="Menu" onClick={() => {}} className="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-on-surface">
             <span className="material-symbols-outlined text-xl">menu</span>
           </button>
           <h1 className="font-headline-md-mobile text-headline-md-mobile text-primary">Date Night</h1>
@@ -87,9 +92,13 @@ export default function Stage1Cards({ me, state }) {
             const isSelected = selected === i;
             return (
               <div
-                key={i}
+                key={g.name}
+                role="button"
+                tabIndex={0}
+                aria-pressed={isFlipped}
                 className={`flip-card w-full h-[220px] md:h-[280px] cursor-pointer ${isFlipped ? "flipped" : ""}`}
-                onClick={() => setFlipped(isFlipped ? null : i)}>
+                onClick={() => setFlipped(isFlipped ? null : i)}
+                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setFlipped(isFlipped ? null : i); } }}>
                 <div className="flip-card-inner w-full h-full relative">
                   {/* Front — Fix #5: hover states */}
                   <div className={`flip-card-front absolute w-full h-full rounded-xl bg-surface-container-high/40 backdrop-blur-md border border-white/15 flex items-center justify-center overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:border-primary/50 hover:shadow-[0_0_25px_rgba(255,176,207,0.2)] transition-all duration-300`}>
@@ -100,13 +109,14 @@ export default function Stage1Cards({ me, state }) {
                   {/* Back */}
                   <div className={`flip-card-back absolute w-full h-full rounded-xl bg-surface-container-high/90 backdrop-blur-xl border ${g.border} flex flex-col items-center justify-center p-sm text-center ${g.shadow}`}>
                     {/* Fix #6: icon in circular container */}
-                    <div className={`w-12 h-12 rounded-full bg-${g.color}-container/20 flex items-center justify-center mb-sm shadow-[0_0_15px_rgba(255,126,185,0.3)]`}>
+                    <div className={`w-12 h-12 rounded-full ${COLOR_BG_CONTAINER[g.color]} flex items-center justify-center mb-sm shadow-[0_0_15px_rgba(255,126,185,0.3)]`}>
                       <span className={`material-symbols-outlined ${COLOR_TEXT[g.color]} text-[28px]`}>{g.icon}</span>
                     </div>
                     <h3 className="font-title-sm text-title-sm text-on-surface mb-xs">{g.name}</h3>
                     <p className="text-[14px] text-on-surface-variant leading-tight mb-sm">{g.desc}</p>
                     {/* Fix #7: glow shadow on select button */}
                     <button
+                      aria-pressed={isSelected}
                       onClick={e => { e.stopPropagation(); setSelected(isSelected ? null : i); }}
                       className={`px-4 py-2 rounded-full font-label-caps text-label-caps hover:opacity-90 active:scale-95 transition-all shadow-[0_0_15px_rgba(255,176,207,0.4)] ${
                         isSelected
