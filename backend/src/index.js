@@ -3,9 +3,8 @@ import http from "http";
 import cors from "cors";
 import { Server } from "socket.io";
 import { login, verify } from "./auth.js";
-import { loadState, saveState, resetState } from "./state.js";
-import { computePhase } from "./phase.js";
-import { registerHandlers } from "./handlers.js";
+import { resetState } from "./state.js";
+import { registerHandlers, mutate } from "./handlers.js";
 
 const app = express();
 app.use(cors());
@@ -32,20 +31,15 @@ io.on("connection", async (socket) => {
   socket.join("main");
   socket.data.user = user;
 
-  let s = await loadState();
-  s.presence[user.id].online = true;
-  s.phase = computePhase(s);
-  await saveState(s);
-  io.to("main").emit("state", s);
+  // Route presence through the same serialized mutate queue as game events so a
+  // connect/disconnect can't clobber a concurrent stage write.
+  await mutate(io, (s) => { s.presence[user.id].online = true; });
 
   registerHandlers(io, socket, user);
 
   socket.on("disconnect", async () => {
-    const cur = await loadState();
-    cur.presence[user.id].online = false;
-    // do NOT reset begin flags mid-session past lobby; clearing begin only matters in lobby
-    await saveState(cur);
-    io.to("main").emit("state", cur);
+    // do NOT reset begin/stage flags — progress persists across reconnect.
+    await mutate(io, (s) => { s.presence[user.id].online = false; });
   });
 });
 

@@ -12,6 +12,9 @@ export default function Stage3Yoga({ me, state }) {
     function init() {
       playerRef.current = new window.YT.Player("yt", {
         videoId: VIDEO_ID, height: "390", width: "640",
+        // explicit origin + enablejsapi so postMessage play/pause control works
+        // when served from nginx (localhost:8080), not just the vite dev server
+        playerVars: { origin: window.location.origin, enablejsapi: 1 },
         events: {
           onReady: () => { ready.current = true; },
           onStateChange: (e) => {

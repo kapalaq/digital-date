@@ -2,13 +2,22 @@ import { loadState, saveState } from "./state.js";
 import { computePhase } from "./phase.js";
 import { scoreQuiz } from "./quiz.js";
 
-async function mutate(io, fn) {
-  const s = await loadState();
-  await fn(s);
-  s.phase = computePhase(s);
-  await saveState(s);
-  io.to("main").emit("state", s);
-  return s;
+// Single-backend, single-session app: serialize all read-modify-write cycles on
+// session:main through one in-process queue so concurrent socket events (the two
+// users acting simultaneously, or a disconnect racing a stage mutation) can't
+// load stale state and clobber each other's writes.
+let mutateChain = Promise.resolve();
+
+export function mutate(io, fn) {
+  mutateChain = mutateChain.then(async () => {
+    const s = await loadState();
+    await fn(s);
+    s.phase = computePhase(s);
+    await saveState(s);
+    io.to("main").emit("state", s);
+    return s;
+  });
+  return mutateChain;
 }
 
 export function registerHandlers(io, socket, user) {
