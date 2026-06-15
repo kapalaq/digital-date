@@ -60,6 +60,10 @@ export function registerHandlers(io, socket, user) {
 
   socket.on("stage4:goals", ({ goals }) => mutate(io, (s) => { s.stage4.goals[id] = goals; }));
 
+  socket.on("stage4:sharedGoals", ({ sharedGoals }) => mutate(io, (s) => {
+    s.stage4.sharedGoals[id] = sharedGoals;
+  }));
+
   socket.on("stage4:allowFewer", ({ value }) => mutate(io, (s) => { s.stage4.allowFewer[id] = value; }));
 
   socket.on("stage4:downloaded", () => mutate(io, (s) => { s.stage4.downloaded[id] = true; }));
