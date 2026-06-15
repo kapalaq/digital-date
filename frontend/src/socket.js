@@ -3,30 +3,35 @@ import { io } from "socket.io-client";
 import { useEffect, useState } from "react";
 
 let socket = null;
-// Latest snapshot, captured synchronously at connect time so the initial
-// `state` event (emitted by the server right after we connect) is never lost
-// in the gap before React mounts and useSocketState attaches its listener.
+// Latest snapshot + React subscribers, kept OUTSIDE the socket lifecycle.
+// useSocketState mounts before login (when socket is still null), so the hook
+// can't subscribe to the socket directly — it would bail and never re-run.
+// Instead components subscribe here once, and connectSocket fans every `state`
+// event out to them, regardless of when the socket is (re)created.
 let latestState = null;
+const subscribers = new Set();
+
+function publish(s) {
+  latestState = s;
+  subscribers.forEach((fn) => fn(s));
+}
 
 export function connectSocket(token) {
   if (socket) socket.disconnect();
   latestState = null;
   socket = io("/", { auth: { token } });
-  socket.on("state", (s) => { latestState = s; });
+  socket.on("state", publish);
   return socket;
 }
 export function getSocket() { return socket; }
 
-// Hook: subscribe to full state snapshots, seeded from the buffered snapshot
-// so a state that arrived before mount is shown immediately.
+// Hook: re-renders on every server state snapshot, current or future.
 export function useSocketState() {
   const [state, setState] = useState(latestState);
   useEffect(() => {
-    if (!socket) return;
-    if (latestState) setState(latestState); // catch anything buffered pre-mount
-    const onState = (s) => setState(s);
-    socket.on("state", onState);
-    return () => socket.off("state", onState);
+    subscribers.add(setState);
+    if (latestState) setState(latestState); // seed if a snapshot already arrived
+    return () => subscribers.delete(setState);
   }, []);
   return state;
 }
