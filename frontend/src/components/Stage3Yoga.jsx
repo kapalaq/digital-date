@@ -1,19 +1,20 @@
+// frontend/src/components/Stage3Yoga.jsx
 import { useEffect, useRef } from "react";
 import { getSocket } from "../socket.js";
 
-const VIDEO_ID = "v7AYKMP6rOE"; // couples yoga session (hardcoded)
+const VIDEO_ID = "v7AYKMP6rOE";
 
 export default function Stage3Yoga({ me, state }) {
   const playerRef = useRef(null);
-  const ready = useRef(false);
-  const suppress = useRef(false);
+  const ready     = useRef(false);
+  const suppress  = useRef(false);
 
   useEffect(() => {
     function init() {
       playerRef.current = new window.YT.Player("yt", {
-        videoId: VIDEO_ID, height: "390", width: "640",
-        // explicit origin + enablejsapi so postMessage play/pause control works
-        // when served from nginx (localhost:8080), not just the vite dev server
+        videoId: VIDEO_ID,
+        height: "360",
+        width:  "640",
         playerVars: { origin: window.location.origin, enablejsapi: 1 },
         events: {
           onReady: () => { ready.current = true; },
@@ -36,7 +37,6 @@ export default function Stage3Yoga({ me, state }) {
 
   function emit(playing, time) { getSocket()?.emit("stage3:videoControl", { playing, time }); }
 
-  // apply remote video state
   useEffect(() => {
     const v = state.stage3.video;
     if (!ready.current || !playerRef.current || v.updatedBy === me.id) return;
@@ -49,14 +49,25 @@ export default function Stage3Yoga({ me, state }) {
 
   const partnerId = me.id === "A" ? "B" : "A";
   const confirm = () => getSocket()?.emit("stage3:confirm");
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      <h2 className="text-3xl mb-4 text-rosegold">Couples Yoga 🧘‍♀️🧘‍♂️</h2>
-      <div id="yt" className="rounded-xl overflow-hidden mb-4 max-w-full" />
-      <p className="text-sm mb-3 text-cream/60">Play/pause is synced between you both.</p>
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 fade-in">
+      <h2 className="font-display text-4xl text-dn-text mb-2">Couples Yoga</h2>
+      <p className="text-dn-muted text-sm mb-8 tracking-wide">
+        play/pause synced between you both
+      </p>
+
+      <div className="glass p-3 mb-6 w-full max-w-2xl overflow-hidden">
+        <div id="yt" className="rounded-xl overflow-hidden" />
+      </div>
+
       <button onClick={confirm} disabled={state.stage3[`${me.id}_done`]}
-        className="px-6 py-3 rounded-full bg-rosegold text-navy font-bold disabled:opacity-50 mb-2">We finished ✓</button>
-      <p className="text-sm">You {state.stage3[`${me.id}_done`]?"✓":"…"} | Partner: {state.stage3[`${partnerId}_done`]?"✓":"waiting…"}</p>
+        className="px-8 py-3 rounded-pill bg-dn-rose-bright text-dn-bg font-bold disabled:opacity-50 hover:opacity-90 transition mb-3">
+        We finished ✓
+      </button>
+      <p className="text-sm text-dn-muted">
+        You {state.stage3[`${me.id}_done`] ? "✓" : "…"} · Partner: {state.stage3[`${partnerId}_done`] ? "✓" : "waiting…"}
+      </p>
     </div>
   );
 }
