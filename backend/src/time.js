@@ -5,7 +5,7 @@ function parseDateStartHourUTC() {
   return { h, m };
 }
 
-// 18:00 in GMT+5 == 13:00 UTC.
+// 18:00 in GMT+1 == 17:00 UTC.
 export function nextSixPmGmtPlus5(now = new Date()) {
   const { h, m } = parseDateStartHourUTC();
   const target = new Date(now);
