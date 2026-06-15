@@ -26,6 +26,7 @@ const Q_ICONS = {
 
 export default function Stage2Quiz({ me, state }) {
   const [ans, setAns] = useState({});
+  const [currentQ, setCurrentQ] = useState(0);
 
   const mySubmitted  = !!state.stage2.answers[me.id];
   const bothAnswered = state.stage2.answers.A && state.stage2.answers.B;
@@ -85,16 +86,28 @@ export default function Stage2Quiz({ me, state }) {
   const submit   = () => getSocket()?.emit("stage2:answers", { answers: ans });
   const complete = QUESTIONS.every(q => q.multi ? (ans[q.id]?.length > 0) : ans[q.id]);
 
-  // Progress: count answered questions
-  const answeredCount = QUESTIONS.filter(q => q.multi ? (ans[q.id]?.length > 0) : ans[q.id]).length;
-  const myProgressPct = Math.round((answeredCount / QUESTIONS.length) * 100);
+  // Progress: based on current question index
+  const myProgressPct = Math.round((currentQ / QUESTIONS.length) * 100);
   const partnerAnswered = bothAnswered;
   const partnerProgressPct = mySubmitted ? 100 : (partnerAnswered ? 100 : 30);
+  const partnerDone = partnerAnswered;
 
-  const playerA = me.id === "A" ? me : { id: "B", name: "Partner" };
-  const playerB = me.id === "B" ? me : { id: "A", name: "Partner" };
   const myName = me.name || (me.id === "A" ? "You" : "Partner");
   const partnerName = me.id === "A" ? (state?.players?.B?.name || "Partner") : (state?.players?.A?.name || "Partner");
+
+  const q = QUESTIONS[currentQ];
+  const cur = ans[q.id];
+  const icon = Q_ICONS[q.id] || "help_outline";
+  const isAnswered = q.multi ? (cur?.length > 0) : !!cur;
+  const isLast = currentQ === QUESTIONS.length - 1;
+
+  const handleNext = () => {
+    if (isLast) {
+      submit();
+    } else {
+      setCurrentQ(i => i + 1);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col relative overflow-x-hidden">
@@ -118,19 +131,11 @@ export default function Stage2Quiz({ me, state }) {
       {/* Main content */}
       <main className="flex-grow pt-24 pb-32 px-safe-margin flex flex-col items-center z-10 w-full max-w-[600px] mx-auto">
 
-        {/* Stage badge + title */}
-        <div className="w-full flex flex-col items-center mb-md mt-sm">
-          <span className="font-label-caps text-label-caps text-secondary uppercase mb-xs">Stage 2</span>
-          <h2 className="font-headline-md-mobile text-headline-md-mobile text-on-surface">Travel Quiz</h2>
-        </div>
-
         {/* Dual progress bar */}
         <div className="w-full mb-md">
           <div className="flex justify-between items-end mb-base">
-            <span className="font-label-caps text-label-caps text-primary">{answeredCount}/{QUESTIONS.length} answered</span>
-            <span className="font-label-caps text-label-caps text-secondary">
-              {myProgressPct}% done
-            </span>
+            <span className="font-label-caps text-label-caps text-primary">Question {currentQ + 1}/{QUESTIONS.length}</span>
+            <span className="font-label-caps text-label-caps text-secondary">Stage 2</span>
           </div>
           <div className="h-2 w-full bg-surface-container-high rounded-full overflow-hidden flex relative">
             {/* My progress from left */}
@@ -138,86 +143,87 @@ export default function Stage2Quiz({ me, state }) {
               className="h-full bg-gradient-to-r from-primary-container to-primary rounded-r-full absolute left-0 z-10 transition-all duration-500"
               style={{ width: `${myProgressPct}%`, boxShadow: "0 0 15px rgba(255,176,207,0.5)" }}
             />
-            {/* Partner progress from right (static placeholder) */}
+            {/* Connection glow dot */}
+            <div
+              className="h-full w-4 absolute rounded-full z-20 opacity-0"
+              style={{
+                left: `${myProgressPct}%`,
+                background: '#df9c33',
+                boxShadow: '0 0 25px rgba(223,156,51,0.8)',
+                opacity: myProgressPct > 0 && myProgressPct < 100 ? 1 : 0
+              }}
+            />
+            {/* Partner progress from right */}
             <div
               className="h-full bg-gradient-to-l from-secondary-container to-secondary rounded-l-full absolute right-0 z-10 transition-all duration-500"
-              style={{ width: "0%", boxShadow: "0 0 15px rgba(202,190,255,0.5)" }}
+              style={{ width: `${partnerProgressPct}%`, boxShadow: "0 0 15px rgba(202,190,255,0.5)" }}
             />
           </div>
         </div>
 
-        {/* Question cards */}
-        <div className="w-full flex flex-col gap-md">
-          {QUESTIONS.map((q, idx) => {
-            const cur = ans[q.id];
-            const icon = Q_ICONS[q.id] || "help_outline";
-            const isAnswered = q.multi ? (cur?.length > 0) : !!cur;
-
-            return (
-              <div
-                key={q.id}
-                className={`glass-card rounded-xl p-md w-full flex flex-col items-center transition-all duration-300 ${isAnswered ? "glow-active" : ""}`}
+        {/* Single question card */}
+        <div className="w-full flex-grow flex flex-col justify-center">
+          <div
+            className={`glass-card rounded-lg p-md w-full flex flex-col items-center mb-xl transition-all duration-300 ${isAnswered ? "glow-active" : ""}`}
+          >
+            {/* Icon badge */}
+            <div className="w-16 h-16 rounded-full bg-surface-container-highest border border-white/10 flex items-center justify-center mb-md shadow-[0_0_15px_rgba(0,0,0,0.2)]">
+              <span
+                className="material-symbols-outlined text-primary text-[32px]"
+                style={{ fontVariationSettings: "'FILL' 1" }}
               >
-                {/* Icon badge */}
-                <div className="w-16 h-16 rounded-full bg-surface-container-highest border border-white/10 flex items-center justify-center mb-md shadow-[0_0_15px_rgba(0,0,0,0.2)]">
-                  <span
-                    className="material-symbols-outlined text-primary text-[32px]"
-                    style={{ fontVariationSettings: "'FILL' 1" }}
+                {icon}
+              </span>
+            </div>
+
+            {/* Question number + text */}
+            <p className="font-label-caps text-label-caps text-primary mb-xs">
+              {currentQ + 1} / {QUESTIONS.length}
+            </p>
+            <h3 className="font-display-lg-mobile text-display-lg-mobile text-center text-on-surface mb-lg">
+              {q.text}
+            </h3>
+
+            {/* Options */}
+            <div className="w-full flex flex-col gap-base">
+              {q.opts.map(([val, label]) => {
+                const active = q.multi ? (cur || []).includes(val) : cur === val;
+                return (
+                  <button
+                    key={val}
+                    onClick={() => q.multi ? toggle(q.id, val) : set(q.id, val)}
+                    className={`w-full py-4 px-gutter rounded-full border transition-all duration-200 flex items-center justify-between group active:scale-95
+                      ${active
+                        ? "border-primary bg-primary/10 shadow-[0_0_15px_rgba(255,176,207,0.2)]"
+                        : "border-white/15 bg-surface-container-low hover:bg-surface-container hover:border-primary/50"
+                      }`}
                   >
-                    {icon}
-                  </span>
-                </div>
-
-                {/* Question number + text */}
-                <p className="font-label-caps text-label-caps text-primary mb-xs">
-                  {idx + 1} / {QUESTIONS.length}
-                </p>
-                <h3 className="font-display-lg-mobile text-display-lg-mobile text-center text-on-surface mb-lg">
-                  {q.text}
-                </h3>
-
-                {/* Options */}
-                <div className="w-full flex flex-col gap-base">
-                  {q.opts.map(([val, label]) => {
-                    const active = q.multi ? (cur || []).includes(val) : cur === val;
-                    return (
-                      <button
-                        key={val}
-                        onClick={() => q.multi ? toggle(q.id, val) : set(q.id, val)}
-                        className={`w-full py-4 px-gutter rounded-full border transition-all duration-200 flex items-center justify-between group active:scale-95
-                          ${active
-                            ? "border-primary bg-primary/10 shadow-[0_0_15px_rgba(255,176,207,0.2)]"
-                            : "border-white/15 bg-surface-container-low hover:bg-surface-container hover:border-primary/50"
-                          }`}
+                    <span className={`font-title-sm text-title-sm transition-colors ${active ? "text-primary" : "text-on-surface group-hover:text-primary"}`}>
+                      {label}
+                    </span>
+                    <div className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors flex-shrink-0
+                      ${active ? "border-primary bg-primary" : "border-outline group-hover:border-primary"}`}>
+                      <span
+                        className={`material-symbols-outlined text-[16px] transition-colors ${active ? "text-on-primary" : "text-transparent"}`}
+                        style={{ fontVariationSettings: "'FILL' 1, 'wght' 700" }}
                       >
-                        <span className={`font-title-sm text-title-sm transition-colors ${active ? "text-primary" : "text-on-surface group-hover:text-primary"}`}>
-                          {label}
-                        </span>
-                        <div className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors flex-shrink-0
-                          ${active ? "border-primary bg-primary" : "border-outline group-hover:border-primary"}`}>
-                          <span
-                            className={`material-symbols-outlined text-[16px] transition-colors ${active ? "text-on-primary" : "text-transparent"}`}
-                            style={{ fontVariationSettings: "'FILL' 1, 'wght' 700" }}
-                          >
-                            check
-                          </span>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
+                        check
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
-        {/* Submit button */}
+        {/* Next / Submit button */}
         <button
-          onClick={submit}
-          disabled={!complete}
-          className="w-full mt-lg py-4 px-gutter rounded-full bg-gradient-to-r from-primary-container to-primary text-on-primary font-title-sm text-title-sm font-bold disabled:opacity-40 hover:opacity-90 active:scale-95 transition-all duration-200 shadow-[0_0_20px_rgba(255,176,207,0.3)]"
+          onClick={handleNext}
+          disabled={!isAnswered}
+          className="w-full py-4 px-gutter rounded-full bg-gradient-to-r from-primary-container to-primary text-on-primary font-title-sm text-title-sm font-bold disabled:opacity-40 hover:opacity-90 active:scale-95 transition-all duration-200 shadow-[0_0_20px_rgba(255,176,207,0.3)]"
         >
-          Lock in my answers
+          {isLast ? "Lock in my answers" : "Next"}
         </button>
 
         {/* Player status row */}
@@ -250,12 +256,15 @@ export default function Stage2Quiz({ me, state }) {
                 <span className="material-symbols-outlined text-on-surface-variant text-[18px]">person</span>
               </div>
               <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-surface-variant rounded-full border border-background flex items-center justify-center">
-                <div className="w-2 h-2 rounded-full bg-on-surface-variant animate-pip-pulse" />
+                {partnerDone
+                  ? <span className="material-symbols-outlined text-secondary text-sm">check_circle</span>
+                  : <span className="material-symbols-outlined text-on-surface-variant/50 text-sm">more_horiz</span>
+                }
               </div>
             </div>
             <div className="flex flex-col items-end">
               <span className="font-label-caps text-label-caps text-secondary">{partnerName}</span>
-              <span className="text-[10px] text-on-surface-variant">Thinking…</span>
+              <span className="text-[10px] text-on-surface-variant">{partnerDone ? "Ready" : "Thinking…"}</span>
             </div>
           </div>
         </div>
