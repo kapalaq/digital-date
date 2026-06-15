@@ -1,0 +1,17 @@
+export const QUESTIONS = [
+  { id:"q1", text:"Preferred climate", opts:[["cold","Cold"],["mild","Mild"],["hot","Hot"]] },
+  { id:"q2", text:"Nature or city?", opts:[["nature","Nature"],["city","City"]] },
+  { id:"q3", text:"Budget level", opts:[["budget","Budget"],["mid","Mid"],["luxury","Luxury"]] },
+  { id:"q4", text:"Trip duration", opts:[["weekend","Weekend"],["1week","1 week"],["2weeks","2+ weeks"]] },
+  { id:"q5", text:"Beach or mountains?", opts:[["beach","Beach"],["mountains","Mountains"]] },
+  { id:"q6", text:"Historical sites interest", opts:[["yes","Yes"],["no","No"],["a_little","A little"]] },
+  { id:"q7", text:"Food adventurousness", opts:[["try_anything","Try anything"],["some_restrictions","Some restrictions"],["familiar","Stick to familiar"]] },
+  { id:"q8", text:"Nightlife importance", opts:[["nightlife_yes","Yes"],["no","No"],["sometimes","Sometimes"]] },
+  { id:"q9", text:"Language barrier tolerance", opts:[["fine","Fine"],["english","Prefer English-friendly"]] },
+  { id:"q10", text:"Visa-free preferred?", opts:[["yes","Yes"],["doesnt_matter","Doesn't matter"]] },
+  { id:"q11", text:"Preferred region", opts:[["europe","Europe"],["asia","Asia"],["americas","Americas"],["middle_east","Middle East"],["africa","Africa"],["oceania","Oceania"]] },
+  { id:"q12", text:"Activities (pick any)", multi:true, opts:[["hiking","Hiking"],["museums","Museums"],["beaches","Beaches"],["shopping","Shopping"],["local_markets","Local markets"],["food_tours","Food tours"]] },
+  { id:"q13", text:"Crowd preference", opts:[["tourist_hotspot","Tourist hotspot"],["hidden_gem","Hidden gem"]] },
+  { id:"q14", text:"Flight duration tolerance", opts:[["under4","Under 4h"],["4to8","4–8h"],["any","Any"]] },
+  { id:"q15", text:"Most important factor", opts:[["romance","Romance"],["adventure","Adventure"],["relaxation","Relaxation"],["culture","Culture"]] },
+];
