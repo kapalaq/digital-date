@@ -26,8 +26,8 @@ export function registerHandlers(io, socket, user) {
   socket.on("lobby:begin", () => mutate(io, (s) => { s.begin[id] = true; }));
 
   socket.on("lobby:throw", ({ kind }) => {
-    // ephemeral: tell the other side a projectile is incoming
-    socket.to("main").emit("lobby:projectile", { from: id, kind, lane: Math.random() });
+    // ephemeral: broadcast to whole room so both users see the flight animation
+    io.to("main").emit("lobby:projectile", { from: id, kind });
   });
 
   socket.on("stage1:confirm", () => mutate(io, (s) => { s.stage1[`${id}_done`] = true; }));
