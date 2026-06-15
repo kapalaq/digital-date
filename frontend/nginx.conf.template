@@ -4,7 +4,7 @@ server {
   index index.html;
 
   # Railway private networking uses IPv6 — must use their internal DNS resolver
-  resolver fd12:3456:789a::1 valid=10s;
+  resolver [fd12:3456:789a::1] valid=10s;
 
   location /api/ {
     set $upstream http://${BACKEND_URL};
