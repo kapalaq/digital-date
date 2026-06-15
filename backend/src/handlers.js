@@ -1,4 +1,4 @@
-import { loadState, saveState } from "./state.js";
+import { loadState, saveState, IDA, IDB } from "./state.js";
 import { computePhase } from "./phase.js";
 import { scoreQuiz } from "./quiz.js";
 
@@ -21,7 +21,7 @@ export function mutate(io, fn) {
 }
 
 export function registerHandlers(io, socket, user) {
-  const id = user.id; // "A" | "B"
+  const id = user.id; // IDA | IDB
 
   socket.on("lobby:begin", () => mutate(io, (s) => { s.begin[id] = true; }));
 
@@ -33,37 +33,41 @@ export function registerHandlers(io, socket, user) {
   socket.on("stage1:confirm", ({ game } = {}) => mutate(io, (s) => {
     s.stage1[`${id}_done`] = true;
     s.stage1[`${id}_game`] = game || null;
-    const { A_done, B_done, A_game, B_game } = s.stage1;
-    if (A_done && B_done && A_game && B_game && A_game === B_game) {
-      s.stage1.winner_game = A_game;
+    const doneA = s.stage1[`${IDA}_done`];
+    const doneB = s.stage1[`${IDB}_done`];
+    const gameA = s.stage1[`${IDA}_game`];
+    const gameB = s.stage1[`${IDB}_game`];
+    if (doneA && doneB && gameA && gameB && gameA === gameB) {
+      s.stage1.winner_game = gameA;
     }
   }));
 
   socket.on("stage1:winner_ack", () => mutate(io, (s) => {
-    if (!s.stage1.winner_ack) s.stage1.winner_ack = { A: false, B: false };
+    if (!s.stage1.winner_ack) s.stage1.winner_ack = { [IDA]: false, [IDB]: false };
     s.stage1.winner_ack[id] = true;
   }));
 
   socket.on("stage1:rps", ({ choice }) => mutate(io, (s) => {
-    if (!s.stage1.rps) s.stage1.rps = { A: null, B: null, round: 0 };
+    if (!s.stage1.rps) s.stage1.rps = { [IDA]: null, [IDB]: null, round: 0 };
     if (s.stage1.rps[id]) return; // already submitted this round
     s.stage1.rps[id] = choice;
-    const { A, B } = s.stage1.rps;
-    if (A && B) {
-      const winner = rpsWinner(A, B);
-      if (winner === "tie") {
-        s.stage1.rps = { A: null, B: null, round: (s.stage1.rps.round || 0) + 1 };
+    const choiceA = s.stage1.rps[IDA];
+    const choiceB = s.stage1.rps[IDB];
+    if (choiceA && choiceB) {
+      const winnerSlot = rpsWinner(choiceA, choiceB);
+      if (winnerSlot === "tie") {
+        s.stage1.rps = { [IDA]: null, [IDB]: null, round: (s.stage1.rps.round || 0) + 1 };
       } else {
-        s.stage1.winner_game = s.stage1[`${winner}_game`];
+        const winnerId = winnerSlot === "A" ? IDA : IDB;
+        s.stage1.winner_game = s.stage1[`${winnerId}_game`];
       }
     }
   }));
 
   socket.on("stage2:answers", ({ answers }) => mutate(io, (s) => {
     s.stage2.answers[id] = answers;
-    if (s.stage2.answers.A && s.stage2.answers.B && !s.stage2.result) {
-      // score using combined answers: merge arrays, prefer agreement by summing
-      s.stage2.result = scoreQuiz(mergeAnswers(s.stage2.answers.A, s.stage2.answers.B));
+    if (s.stage2.answers[IDA] && s.stage2.answers[IDB] && !s.stage2.result) {
+      s.stage2.result = scoreQuiz(mergeAnswers(s.stage2.answers[IDA], s.stage2.answers[IDB]));
       s.stage2.plan.destination = s.stage2.result.country;
     }
   }));
@@ -74,7 +78,7 @@ export function registerHandlers(io, socket, user) {
 
   socket.on("stage2:dontWant", ({ list }) => mutate(io, (s) => {
     s.stage2.dontWant[id] = list;
-    if (s.stage2.dontWant.A && s.stage2.dontWant.B) s.stage2.dontWant.revealed = true;
+    if (s.stage2.dontWant[IDA] && s.stage2.dontWant[IDB]) s.stage2.dontWant.revealed = true;
   }));
 
   socket.on("stage2:planSubmit", () => mutate(io, (s) => { s.stage2.planSubmitted[id] = true; }));

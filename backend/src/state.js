@@ -1,33 +1,42 @@
 import { redis } from "./redisClient.js";
 const KEY = "session:main";
 
+export const IDA = process.env.USER_A_ID ?? "A";
+export const IDB = process.env.USER_B_ID ?? "B";
+
 export function defaultState() {
   return {
     phase: "waiting",
-    presence: { A: { online: false }, B: { online: false } },
-    begin: { A: false, B: false },
-    stage1: { A_done: false, B_done: false, A_game: null, B_game: null, rps: { A: null, B: null, round: 0 }, winner_game: null, winner_ack: { A: false, B: false } },
+    presence: { [IDA]: { online: false }, [IDB]: { online: false } },
+    begin: { [IDA]: false, [IDB]: false },
+    stage1: {
+      [`${IDA}_done`]: false, [`${IDB}_done`]: false,
+      [`${IDA}_game`]: null,  [`${IDB}_game`]: null,
+      rps: { [IDA]: null, [IDB]: null, round: 0 },
+      winner_game: null,
+      winner_ack: { [IDA]: false, [IDB]: false },
+    },
     stage2: {
-      answers: { A: null, B: null },
+      answers: { [IDA]: null, [IDB]: null },
       result: null,
       plan: { destination: "", hotel: "", restaurants: [], activities: [], dates: "" },
-      dontWant: { A: null, B: null, revealed: false },
-      planSubmitted: { A: false, B: false },
+      dontWant: { [IDA]: null, [IDB]: null, revealed: false },
+      planSubmitted: { [IDA]: false, [IDB]: false },
     },
-    stage3: { A_done: false, B_done: false, video: { playing: false, time: 0, updatedBy: null } },
+    stage3: { [`${IDA}_done`]: false, [`${IDB}_done`]: false, video: { playing: false, time: 0, updatedBy: null } },
     stage4: {
-      goals: { A: [], B: [] },
-      sharedGoals: { A: [], B: [] },
-      allowFewer: { A: false, B: false },
-      downloaded: { A: false, B: false },
+      goals:       { [IDA]: [], [IDB]: [] },
+      sharedGoals: { [IDA]: [], [IDB]: [] },
+      allowFewer:  { [IDA]: false, [IDB]: false },
+      downloaded:  { [IDA]: false, [IDB]: false },
     },
     stage5: {
-      lists:       { A: [], B: [] },
-      writingDone: { A: false, B: false },
-      approvals:   { A: {}, B: {} },
-      bonusItems:  { A: [], B: [] },
-      reviewDone:  { A: false, B: false },
-      complete:    { A: false, B: false },
+      lists:       { [IDA]: [], [IDB]: [] },
+      writingDone: { [IDA]: false, [IDB]: false },
+      approvals:   { [IDA]: {}, [IDB]: {} },
+      bonusItems:  { [IDA]: [], [IDB]: [] },
+      reviewDone:  { [IDA]: false, [IDB]: false },
+      complete:    { [IDA]: false, [IDB]: false },
     },
   };
 }
