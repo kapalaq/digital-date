@@ -45,12 +45,8 @@ export default function Lobby({ me, state }) {
 
       {/* Fixed top header */}
       <header className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-white/15 shadow-[0_0_20px_rgba(255,176,207,0.2)]">
-        <div className="flex justify-between items-center px-safe-margin h-16 max-w-[600px] mx-auto">
-          <span className="material-symbols-outlined text-primary cursor-pointer hover:opacity-80">menu</span>
+        <div className="flex items-center justify-center px-safe-margin h-16 max-w-[600px] mx-auto">
           <h1 className="font-headline-md-mobile text-headline-md-mobile text-primary">Date Night</h1>
-          <div className="w-8 h-8 rounded-full bg-surface-container border border-white/15 flex items-center justify-center">
-            <span className="material-symbols-outlined text-sm text-on-surface-variant">person</span>
-          </div>
         </div>
       </header>
 
@@ -129,26 +125,19 @@ export default function Lobby({ me, state }) {
 
         {/* Start button */}
         <div className="mt-auto pb-4">
-          {done ? (
-            <button
-              onClick={begin}
-              disabled={iBegan || !bothOnline}
-              className={`w-full h-16 rounded-xl font-title-sm text-title-sm flex items-center justify-center gap-2 transition-all duration-300 ${
-                iBegan
-                  ? "bg-surface-container-highest text-on-surface-variant cursor-not-allowed"
-                  : bothOnline
-                    ? "bg-gradient-to-r from-primary to-secondary text-on-primary shadow-[0_0_20px_rgba(255,176,207,0.4)] hover:opacity-90 active:scale-95"
-                    : "bg-surface-container-highest text-on-surface-variant cursor-not-allowed"
-              }`}>
-              <span className="material-symbols-outlined">{iBegan ? "hourglass_top" : "play_arrow"}</span>
-              {iBegan ? "Waiting for partner…" : "Start Date"}
-            </button>
-          ) : (
-            <button disabled className="w-full h-16 rounded-xl bg-surface-container-highest text-on-surface-variant font-title-sm text-title-sm flex items-center justify-center gap-2 cursor-not-allowed">
-              <span className="material-symbols-outlined">lock</span>
-              Start Date
-            </button>
-          )}
+          <button
+            onClick={begin}
+            disabled={iBegan || !bothOnline}
+            className={`w-full h-16 rounded-xl font-title-sm text-title-sm flex items-center justify-center gap-2 transition-all duration-300 ${
+              iBegan
+                ? "bg-surface-container-highest text-on-surface-variant cursor-not-allowed"
+                : bothOnline
+                  ? "bg-gradient-to-r from-primary to-secondary text-on-primary shadow-[0_0_20px_rgba(255,176,207,0.4)] hover:opacity-90 active:scale-95"
+                  : "bg-surface-container-highest text-on-surface-variant cursor-not-allowed"
+            }`}>
+            <span className="material-symbols-outlined">{iBegan ? "hourglass_top" : "play_arrow"}</span>
+            {iBegan ? "Waiting for partner…" : "Start Date"}
+          </button>
           <p className="text-center font-label-caps text-label-caps text-on-surface-variant mt-3">
             {bothOnline ? "Both players connected" : "Waiting for both players..."}
           </p>

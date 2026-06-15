@@ -13,7 +13,7 @@ export default function WaitingRoom({ me, state }) {
       <div className="absolute inset-0 bg-stars opacity-40 z-0" />
       <div className="absolute inset-0 bg-gradient-to-b from-surface/80 via-surface-container/50 to-surface-container-low/90 z-0" />
 
-      <main className="relative z-10 flex flex-col items-center justify-center min-h-screen px-safe-margin max-w-[600px] mx-auto">
+      <main className="relative z-10 flex flex-col items-center justify-center min-h-screen px-safe-margin max-w-[600px] mx-auto pt-16">
         {/* Header text */}
         <div className="text-center mb-12">
           <h1 className="font-display-lg-mobile text-display-lg-mobile text-primary mb-xs drop-shadow-[0_0_15px_rgba(255,176,207,0.3)]">

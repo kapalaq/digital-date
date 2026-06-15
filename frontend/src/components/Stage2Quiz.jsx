@@ -33,9 +33,18 @@ export default function Stage2Quiz({ me, state }) {
 
   if (bothAnswered && state.stage2.result) {
     return (
-      <div className="min-h-screen p-6 max-w-2xl mx-auto">
-        <Stage2Result result={state.stage2.result} />
-        <Stage2TripPlanner me={me} state={state} />
+      <div className="min-h-screen dn-shell text-on-background relative overflow-x-hidden">
+        <header className="dn-topbar fixed top-0 w-full z-50">
+          <div className="h-16 max-w-[1200px] mx-auto px-safe-margin md:px-xl flex items-center justify-center">
+            <div className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary">
+              Date Night
+            </div>
+          </div>
+        </header>
+        <main className="pt-24 pb-xl px-safe-margin md:px-xl max-w-[1200px] mx-auto">
+          <Stage2Result result={state.stage2.result} />
+          <Stage2TripPlanner me={me} state={state} />
+        </main>
       </div>
     );
   }
@@ -50,13 +59,9 @@ export default function Stage2Quiz({ me, state }) {
         </div>
 
         {/* Header */}
-        <header className="bg-surface/80 backdrop-blur-xl border-b border-white/15 fixed top-0 w-full z-50 flex justify-between items-center px-safe-margin h-16 max-w-[600px] mx-auto shadow-[0_0_20px_rgba(255,176,207,0.2)]">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center">
-            <span className="material-symbols-outlined text-on-surface-variant">arrow_back</span>
-          </div>
-          <h1 className="font-headline-md-mobile text-headline-md-mobile text-primary font-bold tracking-tight">Date Night</h1>
-          <div className="w-10 h-10 rounded-full bg-surface-container-high border border-white/20 flex items-center justify-center overflow-hidden">
-            <span className="material-symbols-outlined text-on-surface-variant text-[20px]">person</span>
+        <header className="bg-surface/80 backdrop-blur-xl border-b border-white/15 fixed top-0 w-full z-50 shadow-[0_0_20px_rgba(255,176,207,0.2)]">
+          <div className="flex items-center justify-center px-safe-margin h-16 max-w-[600px] mx-auto">
+            <h1 className="font-headline-md-mobile text-headline-md-mobile text-primary font-bold tracking-tight">Date Night</h1>
           </div>
         </header>
 
@@ -118,13 +123,9 @@ export default function Stage2Quiz({ me, state }) {
       </div>
 
       {/* Fixed header */}
-      <header className="bg-surface/80 backdrop-blur-xl border-b border-white/15 fixed top-0 w-full z-50 flex justify-between items-center px-safe-margin h-16 max-w-[600px] mx-auto shadow-[0_0_20px_rgba(255,176,207,0.2)]">
-        <div className="w-10 h-10 rounded-full flex items-center justify-center">
-          <span className="material-symbols-outlined text-on-surface-variant">arrow_back</span>
-        </div>
-        <h1 className="font-headline-md-mobile text-headline-md-mobile text-primary font-bold tracking-tight">Date Night</h1>
-        <div className="w-10 h-10 rounded-full bg-surface-container-high border border-white/20 flex items-center justify-center overflow-hidden">
-          <span className="material-symbols-outlined text-on-surface-variant text-[20px]">person</span>
+      <header className="bg-surface/80 backdrop-blur-xl border-b border-white/15 fixed top-0 w-full z-50 shadow-[0_0_20px_rgba(255,176,207,0.2)]">
+        <div className="flex items-center justify-center px-safe-margin h-16 max-w-[600px] mx-auto">
+          <h1 className="font-headline-md-mobile text-headline-md-mobile text-primary font-bold tracking-tight">Date Night</h1>
         </div>
       </header>
 

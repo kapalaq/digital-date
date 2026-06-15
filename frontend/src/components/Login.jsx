@@ -3,6 +3,24 @@ import { useState } from "react";
 import { login } from "../api.js";
 import { connectSocket } from "../socket.js";
 
+export function restoreSession(onAuth) {
+  const token = sessionStorage.getItem("dn_token");
+  if (!token) return false;
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    if (payload.exp && payload.exp * 1000 < Date.now()) {
+      sessionStorage.removeItem("dn_token");
+      return false;
+    }
+    connectSocket(token);
+    onAuth({ token, id: payload.id, name: payload.name });
+    return true;
+  } catch {
+    sessionStorage.removeItem("dn_token");
+    return false;
+  }
+}
+
 export default function Login({ onAuth }) {
   const [u, setU] = useState("");
   const [p, setP] = useState("");
@@ -13,6 +31,7 @@ export default function Login({ onAuth }) {
     try {
       const token = await login(u, p);
       const me = JSON.parse(atob(token.split(".")[1]));
+      sessionStorage.setItem("dn_token", token);
       connectSocket(token);
       onAuth({ token, id: me.id, name: me.name });
     } catch {

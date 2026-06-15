@@ -6,7 +6,7 @@ export function defaultState() {
     phase: "waiting",
     presence: { A: { online: false }, B: { online: false } },
     begin: { A: false, B: false },
-    stage1: { A_done: false, B_done: false },
+    stage1: { A_done: false, B_done: false, A_game: null, B_game: null, rps: { A: null, B: null, round: 0 }, winner_game: null, winner_ack: { A: false, B: false } },
     stage2: {
       answers: { A: null, B: null },
       result: null,
@@ -20,6 +20,14 @@ export function defaultState() {
       sharedGoals: { A: [], B: [] },
       allowFewer: { A: false, B: false },
       downloaded: { A: false, B: false },
+    },
+    stage5: {
+      lists:       { A: [], B: [] },
+      writingDone: { A: false, B: false },
+      approvals:   { A: {}, B: {} },
+      bonusItems:  { A: [], B: [] },
+      reviewDone:  { A: false, B: false },
+      complete:    { A: false, B: false },
     },
   };
 }

@@ -10,6 +10,66 @@ body {
   min-height: 100vh;
 }
 
+.dn-shell {
+  background:
+    radial-gradient(circle at top left, rgba(255, 176, 207, 0.1), transparent 32rem),
+    radial-gradient(circle at bottom right, rgba(202, 190, 255, 0.1), transparent 34rem),
+    #10102e;
+}
+
+.dn-topbar {
+  background: rgba(16, 16, 46, 0.82);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 20px rgba(255,176,207,0.1);
+}
+
+.dn-icon-button {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #dac0c8;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+.dn-icon-button:hover {
+  color: #ffb0cf;
+  border-color: rgba(255,176,207,0.45);
+  background: rgba(255,176,207,0.1);
+}
+.dn-icon-button:active { transform: scale(0.96); }
+
+.btn-primary-glow {
+  background: linear-gradient(135deg, #ffb0cf 0%, #ff7eb9 100%);
+  color: #63003c;
+  box-shadow: 0 4px 18px rgba(255, 176, 207, 0.32);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+.btn-primary-glow:hover { box-shadow: 0 6px 24px rgba(255, 176, 207, 0.48); }
+.btn-primary-glow:active { transform: scale(0.98); }
+.btn-primary-glow:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-secondary-glass {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #e2dfff;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.btn-secondary-glass:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(202,190,255,0.35);
+}
+.btn-secondary-glass:active { transform: scale(0.98); }
+
 .fade-in { animation: fade .5s ease; }
 @keyframes fade { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
 
@@ -85,8 +145,17 @@ body {
 .glass-textarea:focus { border-color: rgba(255,176,207,0.4); }
 .glass-textarea::placeholder { color: #a28b92; }
 
-/* Make YouTube iframe responsive inside its container */
-#yt iframe { width: 100% !important; aspect-ratio: 16/9; height: auto !important; }
+/* Make YouTube iframe responsive whether the API nests or replaces #yt. */
+#yt {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+#yt iframe,
+iframe#yt {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
 
 /* ── NEW: Stitch aliases + animations ─────────────────────────────── */
 
@@ -205,4 +274,15 @@ body {
 }
 .particle {
   animation: float-up 1.2s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
 }

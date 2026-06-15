@@ -12,20 +12,22 @@ export default function Stage2Result({ result }) {
   }, [result.country]);
 
   return (
-    <div className="my-6 fade-in glass-rose overflow-hidden">
+    <section className="fade-in glass-panel rounded-xl overflow-hidden glow-active">
       {img && (
-        <div className="h-52 overflow-hidden" style={{ borderRadius: "1.5rem 1.5rem 0 0" }}>
+        <div className="h-56 md:h-72 overflow-hidden relative">
           <img src={img} alt={result.country}
-            className="w-full h-full object-cover opacity-80" />
+            className="w-full h-full object-cover opacity-75" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
         </div>
       )}
-      <div className="p-8 text-center">
-        <div className="text-6xl mb-3">{result.flag}</div>
-        <h3 className="font-display text-3xl text-dn-rose mb-2">
-          You&apos;re going to {result.country}!
+      <div className="p-md md:p-lg text-center">
+        <div className="text-6xl mb-sm">{result.flag}</div>
+        <p className="font-label-caps text-label-caps text-secondary mb-xs">The Verdict is In</p>
+        <h3 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary mb-sm">
+          {result.country}
         </h3>
-        <p className="text-dn-muted">{result.description}</p>
+        <p className="text-on-surface-variant max-w-2xl mx-auto">{result.description}</p>
       </div>
-    </div>
+    </section>
   );
 }

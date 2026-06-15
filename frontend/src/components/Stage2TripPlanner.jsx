@@ -5,24 +5,25 @@ import { getSocket } from "../socket.js";
 function DynList({ label, items, onChange }) {
   const [draft, setDraft] = useState("");
   return (
-    <div className="mb-5">
-      <p className="text-dn-muted text-xs uppercase tracking-widest mb-2">{label}</p>
-      <ul className="mb-2 flex flex-col gap-1">
+    <div>
+      <p className="font-label-caps text-label-caps text-on-surface-variant mb-sm">{label}</p>
+      <ul className="mb-sm flex flex-wrap gap-sm">
         {items.map((it, i) => (
           <li key={i}
-            className="flex justify-between items-center px-4 py-2 text-sm text-dn-text"
-            style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "9999px" }}>
-            <span>{it}</span>
+            className="goal-chip flex items-center gap-sm px-4 py-2 text-sm text-on-surface bg-white/[0.06] border border-white/10 rounded-full">
+            <span className="truncate max-w-[14rem]">{it}</span>
             <button onClick={() => onChange(items.filter((_, x) => x !== i))}
-              className="text-dn-muted hover:text-dn-rose ml-2 text-xs">✕</button>
+              aria-label={`Remove ${it}`}
+              className="text-on-surface-variant/60 hover:text-error">
+              <span className="material-symbols-outlined text-[18px]">close</span>
+            </button>
           </li>
         ))}
       </ul>
       <div className="flex gap-2">
         <input
-          className="glass-input flex-1 text-sm"
-          style={{ borderRadius: "1rem" }}
-          placeholder="Add…"
+          className="glass-input flex-1 text-sm rounded-lg"
+          placeholder="Add..."
           value={draft}
           onChange={e => setDraft(e.target.value)}
           onKeyDown={e => {
@@ -30,10 +31,10 @@ function DynList({ label, items, onChange }) {
           }}
         />
         <button
-          className="px-4 py-2 rounded-pill text-sm font-bold transition"
-          style={{ background: "rgba(255,176,207,0.15)", border: "1px solid rgba(255,176,207,0.3)", color: "#ffb0cf" }}
+          className="dn-icon-button text-primary"
+          aria-label={`Add ${label}`}
           onClick={() => { if (draft.trim()) { onChange([...items, draft.trim()]); setDraft(""); } }}>
-          +
+          <span className="material-symbols-outlined">add</span>
         </button>
       </div>
     </div>
@@ -53,71 +54,84 @@ export default function Stage2TripPlanner({ me, state }) {
   const iSubmittedPlan = state.stage2.planSubmitted[me.id];
 
   return (
-    <div className="mt-8 fade-in">
-      <h3 className="font-display text-3xl text-dn-text mb-6">Plan the trip ✈️</h3>
+    <section className="mt-lg fade-in grid grid-cols-1 xl:grid-cols-[1fr_22rem] gap-lg">
+      <div className="flex flex-col gap-md">
+        <div>
+          <p className="font-label-caps text-label-caps text-secondary mb-xs">Trip Planner</p>
+          <h3 className="font-headline-md-mobile md:font-headline-md text-headline-md-mobile md:text-headline-md text-on-surface">
+            Build the first draft together
+          </h3>
+        </div>
 
-      <div className="glass p-6 mb-4">
-        <label className="block mb-4">
-          <span className="text-dn-muted text-xs uppercase tracking-widest">Destination</span>
-          <input className="glass-input mt-2" style={{ borderRadius: "1rem" }}
+        <div className="glass-panel rounded-xl p-md md:p-lg flex flex-col gap-md">
+          <label className="block">
+          <span className="font-label-caps text-label-caps text-on-surface-variant">Destination</span>
+          <input className="glass-input mt-sm rounded-lg"
             value={plan.destination} readOnly />
         </label>
-        <label className="block mb-4">
-          <span className="text-dn-muted text-xs uppercase tracking-widest">Hotel 🏨</span>
-          <input className="glass-input mt-2" style={{ borderRadius: "1rem" }}
+        <label className="block">
+          <span className="font-label-caps text-label-caps text-on-surface-variant">Hotel</span>
+          <input className="glass-input mt-sm rounded-lg"
             value={plan.hotel} onChange={e => updatePlan({ hotel: e.target.value })} />
         </label>
-        <DynList label="🍽️ Restaurants" items={plan.restaurants} onChange={r => updatePlan({ restaurants: r })} />
-        <DynList label="🎯 Activities"   items={plan.activities}  onChange={a => updatePlan({ activities: a })} />
+        <DynList label="Restaurants" items={plan.restaurants} onChange={r => updatePlan({ restaurants: r })} />
+        <DynList label="Activities"   items={plan.activities}  onChange={a => updatePlan({ activities: a })} />
         <label className="block">
-          <span className="text-dn-muted text-xs uppercase tracking-widest">📅 Approximate dates</span>
-          <input className="glass-input mt-2" style={{ borderRadius: "1rem" }}
+          <span className="font-label-caps text-label-caps text-on-surface-variant">Approximate dates</span>
+          <input className="glass-input mt-sm rounded-lg"
             value={plan.dates} onChange={e => updatePlan({ dates: e.target.value })} />
         </label>
       </div>
+      </div>
 
-      <div className="glass p-5 mb-5" style={{ borderColor: "rgba(255,176,207,0.2)" }}>
-        <p className="font-semibold text-dn-text mb-1">🚫 Things I do NOT want</p>
-        <p className="text-dn-muted text-xs mb-3">Private until both submit</p>
+      <aside className="glass-panel rounded-xl p-md md:p-lg h-fit border-primary/30">
+        <div className="flex items-center gap-sm mb-sm">
+          <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
+            <span className="material-symbols-outlined text-primary">visibility_off</span>
+          </div>
+          <div>
+            <p className="font-title-sm text-title-sm text-on-surface">No-go list</p>
+            <p className="text-sm text-on-surface-variant">Private until both submit</p>
+          </div>
+        </div>
         {iSubmittedDW ? (
           dw.revealed ? (
-            <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-sm text-sm">
               <div>
-                <p className="text-dn-rose text-xs uppercase tracking-widest mb-2">You</p>
+                <p className="font-label-caps text-label-caps text-primary mb-xs">You</p>
                 <ul className="flex flex-col gap-1">
-                  {dw[me.id].map((x, i) => <li key={i} className="text-dn-text">• {x}</li>)}
+                  {dw[me.id].map((x, i) => <li key={i} className="text-on-surface">{x}</li>)}
                 </ul>
               </div>
               <div>
-                <p className="text-dn-violet text-xs uppercase tracking-widest mb-2">Partner</p>
+                <p className="font-label-caps text-label-caps text-secondary mb-xs">Partner</p>
                 <ul className="flex flex-col gap-1">
-                  {dw[me.id === "A" ? "B" : "A"].map((x, i) => <li key={i} className="text-dn-text">• {x}</li>)}
+                  {dw[me.id === "A" ? "B" : "A"].map((x, i) => <li key={i} className="text-on-surface">{x}</li>)}
                 </ul>
               </div>
             </div>
-          ) : <p className="text-sm text-dn-muted">Submitted. Waiting for partner…</p>
+          ) : <p className="text-sm text-on-surface-variant">Submitted. Waiting for partner...</p>
         ) : (
           <>
             <textarea
-              className="glass-textarea"
-              placeholder="One per line…"
+              className="glass-textarea min-h-[8rem]"
+              placeholder="One per line..."
               value={dontWant}
               onChange={e => setDontWant(e.target.value)}
             />
             <button
-              className="mt-3 px-5 py-2 rounded-pill text-sm font-semibold transition"
-              style={{ background: "rgba(255,176,207,0.15)", border: "1px solid rgba(255,176,207,0.3)", color: "#ffb0cf" }}
+              className="mt-sm px-5 py-2 rounded-full text-sm font-semibold btn-secondary-glass text-primary"
               onClick={submitDontWant}>
               Lock my list
             </button>
           </>
         )}
-      </div>
+        <button onClick={submitPlan} disabled={iSubmittedPlan || !dw.revealed}
+          className="mt-md w-full px-8 py-3 rounded-full btn-primary-glow font-bold">
+          {iSubmittedPlan ? "Waiting for partner..." : "Submit full plan"}
+        </button>
+      </aside>
 
-      <button onClick={submitPlan} disabled={iSubmittedPlan || !dw.revealed}
-        className="px-8 py-3 rounded-pill bg-dn-rose-bright text-dn-bg font-bold disabled:opacity-50 hover:opacity-90 transition">
-        {iSubmittedPlan ? "Waiting for partner…" : "Submit full plan"}
-      </button>
-    </div>
+    </section>
   );
 }
