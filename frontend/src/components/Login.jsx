@@ -12,8 +12,8 @@ export default function Login({ onAuth }) {
     e.preventDefault();
     try {
       const token = await login(u, p);
-      connectSocket(token);
       const me = JSON.parse(atob(token.split(".")[1]));
+      connectSocket(token);
       onAuth({ token, id: me.id, name: me.name });
     } catch {
       setErr("Invalid credentials");
@@ -37,7 +37,7 @@ export default function Login({ onAuth }) {
         {/* Form */}
         <form onSubmit={submit} className="w-full flex flex-col gap-md">
           {/* Username */}
-          <div className="glass-input rounded-full px-md py-sm flex items-center gap-sm">
+          <div className="bg-white/[0.08] backdrop-blur-md border border-white/20 rounded-full px-md py-sm flex items-center gap-sm transition-all focus-within:border-primary focus-within:shadow-[0_0_0_3px_rgba(255,176,207,0.1)]">
             <span className="material-symbols-outlined text-primary/70">person</span>
             <input
               className="bg-transparent border-none outline-none w-full text-on-surface placeholder:text-on-surface-variant/50 font-body-md text-body-md"
@@ -49,7 +49,7 @@ export default function Login({ onAuth }) {
             />
           </div>
           {/* Password */}
-          <div className="glass-input rounded-full px-md py-sm flex items-center gap-sm">
+          <div className="bg-white/[0.08] backdrop-blur-md border border-white/20 rounded-full px-md py-sm flex items-center gap-sm transition-all focus-within:border-primary focus-within:shadow-[0_0_0_3px_rgba(255,176,207,0.1)]">
             <span className="material-symbols-outlined text-primary/70">lock</span>
             <input
               className="bg-transparent border-none outline-none w-full text-on-surface placeholder:text-on-surface-variant/50 font-body-md text-body-md"
