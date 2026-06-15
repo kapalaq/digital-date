@@ -6,3 +6,4 @@ dist/
 **/*.html
 **/*.png
 .codex/
+backend/.env

@@ -1,10 +1,9 @@
 import jwt from "jsonwebtoken";
 const SECRET = process.env.JWT_SECRET || "dev-secret-change-me";
 
-// Hardcoded users. credential -> identity letter.
 const USERS = {
-  user_a: { pass: "pass_a", id: "A", name: "User A" },
-  user_b: { pass: "pass_b", id: "B", name: "User B" },
+  [process.env.USER_A_USERNAME]: { pass: process.env.USER_A_PASSWORD, id: process.env.USER_A_ID, name: process.env.USER_A_NAME },
+  [process.env.USER_B_USERNAME]: { pass: process.env.USER_B_PASSWORD, id: process.env.USER_B_ID, name: process.env.USER_B_NAME },
 };
 
 export function login(username, password) {
