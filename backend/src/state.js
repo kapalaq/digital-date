@@ -17,6 +17,7 @@ export function defaultState() {
     stage3: { A_done: false, B_done: false, video: { playing: false, time: 0, updatedBy: null } },
     stage4: {
       goals: { A: [], B: [] },
+      sharedGoals: { A: [], B: [] },
       allowFewer: { A: false, B: false },
       downloaded: { A: false, B: false },
     },
