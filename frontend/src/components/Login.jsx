@@ -21,43 +21,40 @@ export default function Login({ onAuth }) {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center fade-in px-safe-margin relative overflow-hidden">
-      {/* Ambient blobs */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[100px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-secondary/10 rounded-full blur-[120px]" />
-      </div>
-
-      <div className="relative z-10 flex flex-col items-center gap-6 w-full max-w-sm">
+    <div className="min-h-screen bg-background text-on-background flex items-center justify-center glow-bg p-safe-margin font-body-md">
+      <main className="w-full max-w-[600px] flex flex-col items-center gap-xl relative z-10 fade-in">
         {/* Logo */}
-        <div className="flex flex-col items-center gap-2 mb-4">
-          <div className="w-16 h-16 rounded-full flex items-center justify-center border border-primary/30 bg-primary/10">
-            <span className="material-symbols-outlined text-primary text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
+        <div className="flex flex-col items-center gap-md text-center">
+          <div className="relative w-32 h-32 rounded-full overflow-hidden shadow-[0_0_30px_rgba(255,176,207,0.3)] border border-white/10 bg-surface flex items-center justify-center">
+            <span className="material-symbols-outlined text-primary" style={{ fontSize: 64, fontVariationSettings: "'FILL' 1" }}>favorite</span>
           </div>
-          <h1 className="font-display-lg-mobile text-display-lg-mobile text-primary text-center drop-shadow-[0_0_15px_rgba(255,176,207,0.3)]">
-            Date Night
-          </h1>
-          <p className="font-label-caps text-label-caps text-on-surface-variant">Your private digital sanctuary.</p>
+          <div>
+            <h1 className="font-display-lg-mobile text-display-lg-mobile text-primary mb-2">Date Night</h1>
+            <p className="font-body-md text-body-md text-on-surface-variant/80">Your private digital sanctuary.</p>
+          </div>
         </div>
 
         {/* Form */}
-        <form onSubmit={submit} className="glass-card w-full p-8 flex flex-col gap-md">
-          <div>
-            <label className="font-label-caps text-label-caps text-on-surface-variant block mb-xs">Username</label>
+        <form onSubmit={submit} className="w-full flex flex-col gap-md">
+          {/* Username */}
+          <div className="glass-input rounded-full px-md py-sm flex items-center gap-sm">
+            <span className="material-symbols-outlined text-primary/70">person</span>
             <input
-              className="glass-input"
-              placeholder="username"
+              className="bg-transparent border-none outline-none w-full text-on-surface placeholder:text-on-surface-variant/50 font-body-md text-body-md"
+              placeholder="Username"
+              type="text"
               value={u}
               onChange={e => setU(e.target.value)}
               autoComplete="username"
             />
           </div>
-          <div>
-            <label className="font-label-caps text-label-caps text-on-surface-variant block mb-xs">Password</label>
+          {/* Password */}
+          <div className="glass-input rounded-full px-md py-sm flex items-center gap-sm">
+            <span className="material-symbols-outlined text-primary/70">lock</span>
             <input
-              className="glass-input"
+              className="bg-transparent border-none outline-none w-full text-on-surface placeholder:text-on-surface-variant/50 font-body-md text-body-md"
+              placeholder="Password"
               type="password"
-              placeholder="password"
               value={p}
               onChange={e => setP(e.target.value)}
               autoComplete="current-password"
@@ -66,11 +63,11 @@ export default function Login({ onAuth }) {
           {err && <p className="text-error text-sm text-center">{err}</p>}
           <button
             type="submit"
-            className="w-full py-sm rounded-full bg-primary text-on-primary font-title-sm text-title-sm tracking-wide hover:opacity-90 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,176,207,0.3)] mt-2">
+            className="mt-sm w-full bg-gradient-to-r from-primary to-primary-container text-on-primary font-title-sm text-title-sm py-sm rounded-full shadow-[0_4px_20px_rgba(255,176,207,0.4)] hover:shadow-[0_6px_25px_rgba(255,176,207,0.6)] active:scale-95 transition-all duration-300 h-12 flex items-center justify-center">
             Enter
           </button>
         </form>
-      </div>
+      </main>
     </div>
   );
 }
