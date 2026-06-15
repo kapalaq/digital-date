@@ -132,7 +132,7 @@ export default function Lobby({ me, state }) {
           {done ? (
             <button
               onClick={begin}
-              disabled={iBegan}
+              disabled={iBegan || !bothOnline}
               className={`w-full h-16 rounded-xl font-title-sm text-title-sm flex items-center justify-center gap-2 transition-all duration-300 ${
                 iBegan
                   ? "bg-surface-container-highest text-on-surface-variant cursor-not-allowed"
