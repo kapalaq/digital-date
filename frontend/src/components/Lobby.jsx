@@ -35,6 +35,21 @@ export default function Lobby({ me, state }) {
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-4">
       <Projectiles meId={me.id} onHit={onHit} />
 
+      {/* Couple card at top */}
+      <div className="glass flex items-center gap-4 px-6 py-3 mb-8 w-full max-w-sm">
+        <div className="flex-1 text-right">
+          <p className="text-xs font-bold tracking-widest uppercase text-dn-rose">User A</p>
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="w-2 h-2 rounded-full bg-dn-rose" style={{ boxShadow: "0 0 6px rgba(255,176,207,0.7)" }} />
+          <span className="text-xs text-dn-muted">✦</span>
+          <span className="w-2 h-2 rounded-full bg-dn-violet" style={{ boxShadow: "0 0 6px rgba(202,190,255,0.7)" }} />
+        </div>
+        <div className="flex-1">
+          <p className="text-xs font-bold tracking-widest uppercase text-dn-violet">User B</p>
+        </div>
+      </div>
+
       <h2 className="font-display text-4xl text-dn-rose mb-1">The Lobby</h2>
       <p className="text-dn-muted text-sm mb-10">
         Date begins in <span className="text-dn-amber font-semibold">{label}</span>
