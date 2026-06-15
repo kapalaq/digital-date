@@ -44,7 +44,9 @@ export function defaultState() {
 export async function loadState() {
   const raw = await redis.get(KEY);
   if (!raw) { const s = defaultState(); await redis.set(KEY, JSON.stringify(s)); return s; }
-  return JSON.parse(raw);
+  const s = JSON.parse(raw);
+  if (!(IDA in s.presence) || !(IDB in s.presence)) return resetState();
+  return s;
 }
 
 export async function saveState(s) { await redis.set(KEY, JSON.stringify(s)); }
