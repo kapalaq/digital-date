@@ -1,12 +1,18 @@
-const PLAYERS = [
-  { id: "A", name: "User A", dot: "#ffb0cf", glow: "rgba(255,176,207,0.7)" },
-  { id: "B", name: "User B", dot: "#cabeff", glow: "rgba(202,190,255,0.7)" },
+const COLORS = [
+  { dot: "#ffb0cf", glow: "rgba(255,176,207,0.7)" },
+  { dot: "#cabeff", glow: "rgba(202,190,255,0.7)" },
 ];
 
 export default function FloatingStatus({ me, state }) {
+  const { ida, idb, nameA, nameB } = state.meta;
+  const players = [
+    { id: ida, name: nameA, ...COLORS[0] },
+    { id: idb, name: nameB, ...COLORS[1] },
+  ];
+
   return (
     <div className="fixed bottom-4 right-4 flex gap-2 z-30">
-      {PLAYERS.map(({ id, name, dot, glow }) => {
+      {players.map(({ id, name, dot, glow }) => {
         const online = state.presence[id].online;
         const isMe = me.id === id;
         return (

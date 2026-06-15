@@ -27,7 +27,7 @@ export default function App() {
     </div>
   );
 
-  const partnerId = me.id === "A" ? "B" : "A";
+  const partnerId = me.id === state.meta.ida ? state.meta.idb : state.meta.ida;
 
   const view = {
     waiting: <WaitingRoom me={me} state={state} />,

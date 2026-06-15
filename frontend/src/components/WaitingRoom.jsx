@@ -3,8 +3,9 @@ import { useCountdown } from "../hooks/useCountdown.js";
 
 export default function WaitingRoom({ me, state }) {
   const { label } = useCountdown();
-  const partnerId   = me.id === "A" ? "B" : "A";
-  const partnerName = partnerId === "A" ? "User A" : "User B";
+  const { ida, idb, nameA, nameB } = state.meta;
+  const partnerId   = me.id === ida ? idb : ida;
+  const partnerName = partnerId === ida ? nameA : nameB;
   const partnerOnline = state.presence[partnerId].online;
 
   return (

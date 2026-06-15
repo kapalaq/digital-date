@@ -106,7 +106,7 @@ export default function Stage2TripPlanner({ me, state }) {
               <div>
                 <p className="font-label-caps text-label-caps text-secondary mb-xs">Partner</p>
                 <ul className="flex flex-col gap-1">
-                  {dw[me.id === "A" ? "B" : "A"].map((x, i) => <li key={i} className="text-on-surface">{x}</li>)}
+                  {dw[me.id === state.meta.ida ? state.meta.idb : state.meta.ida].map((x, i) => <li key={i} className="text-on-surface">{x}</li>)}
                 </ul>
               </div>
             </div>

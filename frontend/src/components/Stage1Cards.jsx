@@ -50,7 +50,8 @@ export default function Stage1Cards({ me, state }) {
   const [seenWinner,  setSeenWinner]  = useState(false);
   const games = useMemo(() => [...GAMES].sort(() => Math.random() - 0.5), []);
 
-  const partnerId   = me.id === "A" ? "B" : "A";
+  const { ida, idb, nameA, nameB } = state.meta;
+  const partnerId   = me.id === ida ? idb : ida;
   const iDone       = state.stage1[`${me.id}_done`];
   const partnerDone = state.stage1[`${partnerId}_done`];
 
@@ -150,26 +151,27 @@ export default function Stage1Cards({ me, state }) {
 
         {/* Player status */}
         <div className="w-full max-w-[300px] flex flex-col gap-4 mt-auto">
-          {["A", "B"].map(pid => {
+          {[ida, idb].map((pid, idx) => {
             const done  = state.stage1[`${pid}_done`];
             const isMe  = pid === me.id;
-            const color = pid === "A" ? "primary" : "secondary";
+            const color = idx === 0 ? "primary" : "secondary";
+            const pname = idx === 0 ? nameA : nameB;
             const status = done ? "Ready" : (isMe && selected !== null ? "Picked" : "Picking…");
             return (
               <div key={pid} className="flex items-center justify-between bg-surface-container/60 backdrop-blur-md rounded-full px-4 py-2 border border-white/10">
                 <div className="flex items-center gap-3">
-                  <div className={`w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center border ${pid === "A" ? "border-primary/40" : "border-secondary/40"}`}>
+                  <div className={`w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center border ${idx === 0 ? "border-primary/40" : "border-secondary/40"}`}>
                     <span className="material-symbols-outlined text-xs text-on-surface-variant" style={{fontSize: "14px"}}>person</span>
                   </div>
                   <span className={`font-body-md text-body-md ${COLOR_TEXT[color]}`}>
-                    {isMe ? "You" : pid === "A" ? "User A" : "User B"}
+                    {isMe ? "You" : pname}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className={`font-label-caps text-label-caps ${done ? COLOR_TEXT[color] : (isMe && selected !== null ? "text-tertiary" : "text-on-surface-variant")}`}>
                     {status}
                   </span>
-                  <span className={`w-2 h-2 rounded-full ${done ? (pid === "A" ? "bg-primary" : "bg-secondary") : (isMe && selected !== null ? "bg-tertiary" : "bg-on-surface-variant/40")} ${done ? "animate-pip-pulse shadow-[0_0_8px_rgba(255,176,207,0.8)]" : ""}`} />
+                  <span className={`w-2 h-2 rounded-full ${done ? (idx === 0 ? "bg-primary" : "bg-secondary") : (isMe && selected !== null ? "bg-tertiary" : "bg-on-surface-variant/40")} ${done ? "animate-pip-pulse shadow-[0_0_8px_rgba(255,176,207,0.8)]" : ""}`} />
                 </div>
               </div>
             );

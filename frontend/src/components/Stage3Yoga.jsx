@@ -47,7 +47,8 @@ export default function Stage3Yoga({ me, state }) {
     setTimeout(() => { suppress.current = false; }, 400);
   }, [state.stage3.video]);
 
-  const partnerId = me.id === "A" ? "B" : "A";
+  const { ida, idb } = state.meta;
+  const partnerId = me.id === ida ? idb : ida;
   const confirm = () => getSocket()?.emit("stage3:confirm");
 
   return (

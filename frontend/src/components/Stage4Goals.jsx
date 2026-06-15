@@ -11,7 +11,8 @@ export default function Stage4Goals({ me, state }) {
   const sock       = getSocket();
   const myGoals    = state.stage4.goals[me.id];
   const myShared   = state.stage4.sharedGoals[me.id] || [];
-  const partnerId  = me.id === "A" ? "B" : "A";
+  const { ida, idb } = state.meta;
+  const partnerId  = me.id === ida ? idb : ida;
   const partnerGoals  = state.stage4.goals[partnerId];
   const partnerShared = state.stage4.sharedGoals[partnerId] || [];
   const partnerAllowsFewer = state.stage4.allowFewer[partnerId];
@@ -54,8 +55,8 @@ export default function Stage4Goals({ me, state }) {
     sock?.emit("stage4:downloaded");
   };
 
-  const myColor      = me.id === "A" ? "primary" : "secondary";
-  const partnerColor = me.id === "A" ? "secondary" : "primary";
+  const myColor      = me.id === ida ? "primary" : "secondary";
+  const partnerColor = me.id === ida ? "secondary" : "primary";
   const progress = Math.min(100, myGoals.length);
   const circumference = 282.7;
   const dashOffset = circumference - (circumference * progress) / 100;

@@ -97,8 +97,8 @@ export default function Stage2Quiz({ me, state }) {
   const partnerProgressPct = mySubmitted ? 100 : (partnerAnswered ? 100 : 30);
   const partnerDone = partnerAnswered;
 
-  const myName = me.name || (me.id === "A" ? "You" : "Partner");
-  const partnerName = me.id === "A" ? (state?.players?.B?.name || "Partner") : (state?.players?.A?.name || "Partner");
+  const myName = me.name || "You";
+  const partnerName = me.id === state.meta.ida ? state.meta.nameB : state.meta.nameA;
 
   const q = QUESTIONS[currentQ];
   const cur = ans[q.id];

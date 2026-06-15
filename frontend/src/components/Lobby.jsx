@@ -6,7 +6,8 @@ import Projectiles from "./Projectiles.jsx";
 
 export default function Lobby({ me, state }) {
   const { label, done } = useCountdown();
-  const [hitEffects, setHitEffects]   = useState({ A: null, B: null });
+  const { ida, idb, nameA, nameB } = state.meta;
+  const [hitEffects, setHitEffects]   = useState(() => ({ [ida]: null, [idb]: null }));
   const [isDodging,  setIsDodging]    = useState(false);
   const isDodgingRef = useRef(false);
 
@@ -31,7 +32,9 @@ export default function Lobby({ me, state }) {
     }), 2200);
   }, [me.id]);
 
-  const bothOnline = state.presence.A.online && state.presence.B.online;
+  const bothOnline = state.presence[ida].online && state.presence[idb].online;
+  const hitA = hitEffects[ida];
+  const hitB = hitEffects[idb];
 
   return (
     <div className="min-h-screen bg-background text-on-background relative overflow-hidden">
@@ -41,7 +44,7 @@ export default function Lobby({ me, state }) {
         <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-secondary/10 rounded-full blur-[120px]" />
       </div>
 
-      <Projectiles meId={me.id} onHit={onHit} />
+      <Projectiles meId={me.id} ida={ida} idb={idb} onHit={onHit} />
 
       {/* Fixed top header */}
       <header className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-white/15 shadow-[0_0_20px_rgba(255,176,207,0.2)]">
@@ -64,18 +67,18 @@ export default function Lobby({ me, state }) {
         <div className="relative h-64 glass-panel rounded-xl flex items-center justify-between px-8 mb-8 overflow-hidden" id="arena">
           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary via-surface to-background" />
 
-          {/* Player A */}
-          <div className={`flex flex-col items-center gap-4 z-10 animate-float transition-all duration-200 ${isDodging && me.id === "A" ? "translate-x-6 -translate-y-4" : ""}`}>
-            <div className={`w-24 h-24 rounded-full border-2 border-primary p-1 glow-primary relative glass-card flex items-center justify-center text-6xl select-none ${hitEffects.A ? "scale-90" : "scale-100"} transition-transform`}>
+          {/* Player A (left) */}
+          <div className={`flex flex-col items-center gap-4 z-10 animate-float transition-all duration-200 ${isDodging && me.id === ida ? "translate-x-6 -translate-y-4" : ""}`}>
+            <div className={`w-24 h-24 rounded-full border-2 border-primary p-1 glow-primary relative glass-card flex items-center justify-center text-6xl select-none ${hitA ? "scale-90" : "scale-100"} transition-transform`}>
               👩
-              {hitEffects.A?.kind === "pie" && <span key={hitEffects.A.ts + "-pie"} className="absolute inset-0 flex items-center justify-center text-4xl animate-splat pointer-events-none">💥</span>}
-              {hitEffects.A?.kind === "heart" && <span key={hitEffects.A.ts + "-heart"} className="absolute -top-4 right-0 text-3xl animate-arrow pointer-events-none">💘</span>}
+              {hitA?.kind === "pie" && <span key={hitA.ts + "-pie"} className="absolute inset-0 flex items-center justify-center text-4xl animate-splat pointer-events-none">💥</span>}
+              {hitA?.kind === "heart" && <span key={hitA.ts + "-heart"} className="absolute -top-4 right-0 text-3xl animate-arrow pointer-events-none">💘</span>}
               <span className="absolute bottom-0 right-0 w-4 h-4 bg-primary rounded-full border-2 border-surface animate-pip-pulse" />
             </div>
             <span className="font-label-caps text-label-caps text-primary px-3 py-1 glass-panel rounded-full">
-              {me.id === "A" ? "You" : "User A"}
+              {me.id === ida ? "You" : nameA}
             </span>
-            {isDodging && me.id === "A" && <span className="text-xs text-tertiary animate-bounce">dodge!</span>}
+            {isDodging && me.id === ida && <span className="text-xs text-tertiary animate-bounce">dodge!</span>}
           </div>
 
           {/* Center */}
@@ -85,18 +88,18 @@ export default function Lobby({ me, state }) {
             </div>
           </div>
 
-          {/* Player B */}
-          <div className={`flex flex-col items-center gap-4 z-10 animate-float-delayed transition-all duration-200 ${isDodging && me.id === "B" ? "-translate-x-6 -translate-y-4" : ""}`}>
-            <div className={`w-24 h-24 rounded-full border-2 border-secondary p-1 glow-secondary relative glass-card flex items-center justify-center text-6xl select-none ${hitEffects.B ? "scale-90" : "scale-100"} transition-transform`}>
+          {/* Player B (right) */}
+          <div className={`flex flex-col items-center gap-4 z-10 animate-float-delayed transition-all duration-200 ${isDodging && me.id === idb ? "-translate-x-6 -translate-y-4" : ""}`}>
+            <div className={`w-24 h-24 rounded-full border-2 border-secondary p-1 glow-secondary relative glass-card flex items-center justify-center text-6xl select-none ${hitB ? "scale-90" : "scale-100"} transition-transform`}>
               👨
-              {hitEffects.B?.kind === "pie" && <span key={hitEffects.B.ts + "-pie"} className="absolute inset-0 flex items-center justify-center text-4xl animate-splat pointer-events-none">💥</span>}
-              {hitEffects.B?.kind === "heart" && <span key={hitEffects.B.ts + "-heart"} className="absolute -top-4 right-0 text-3xl animate-arrow pointer-events-none">💘</span>}
+              {hitB?.kind === "pie" && <span key={hitB.ts + "-pie"} className="absolute inset-0 flex items-center justify-center text-4xl animate-splat pointer-events-none">💥</span>}
+              {hitB?.kind === "heart" && <span key={hitB.ts + "-heart"} className="absolute -top-4 right-0 text-3xl animate-arrow pointer-events-none">💘</span>}
               <span className="absolute bottom-0 right-0 w-4 h-4 bg-secondary rounded-full border-2 border-surface animate-pip-pulse" />
             </div>
             <span className="font-label-caps text-label-caps text-secondary px-3 py-1 glass-panel rounded-full">
-              {me.id === "B" ? "You" : "User B"}
+              {me.id === idb ? "You" : nameB}
             </span>
-            {isDodging && me.id === "B" && <span className="text-xs text-tertiary animate-bounce">dodge!</span>}
+            {isDodging && me.id === idb && <span className="text-xs text-tertiary animate-bounce">dodge!</span>}
           </div>
         </div>
 

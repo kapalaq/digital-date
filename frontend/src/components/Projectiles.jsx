@@ -3,7 +3,7 @@ import { getSocket } from "../socket.js";
 
 let nextId = 1;
 
-export default function Projectiles({ meId, onHit }) {
+export default function Projectiles({ meId, ida, idb, onHit }) {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
@@ -11,17 +11,17 @@ export default function Projectiles({ meId, onHit }) {
     if (!sock) return;
     const onProj = ({ from, kind }) => {
       const id = nextId++;
-      const goRight = from === "A";
+      const goRight = from === ida;
       setItems(x => [...x, { id, kind, goRight }]);
       setTimeout(() => {
         setItems(x => x.filter(i => i.id !== id));
-        const target = from === "A" ? "B" : "A";
+        const target = from === ida ? idb : ida;
         onHit?.(kind, target);
       }, 1400);
     };
     sock.on("lobby:projectile", onProj);
     return () => sock.off("lobby:projectile", onProj);
-  }, [meId, onHit]);
+  }, [meId, onHit, ida, idb]);
 
   return (
     <div className="pointer-events-none fixed inset-0 overflow-hidden z-10">

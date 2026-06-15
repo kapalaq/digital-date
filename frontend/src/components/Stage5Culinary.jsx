@@ -38,13 +38,14 @@ function WritingPhase({ me, state }) {
   const [draft, setDraft] = useState("");
   const sock       = getSocket();
   const s5         = state.stage5;
-  const partnerId  = me.id === "A" ? "B" : "A";
+  const { ida, idb, nameA, nameB } = state.meta;
+  const partnerId  = me.id === ida ? idb : ida;
   const myList     = s5.lists[me.id] || [];
   const iDone      = s5.writingDone[me.id];
   const partnerDone = s5.writingDone[partnerId];
   const partnerCount = (s5.lists[partnerId] || []).length;
-  const myPartnerLabel = partnerId === "A" ? "User A" : "User B";
-  const partnerName    = partnerId === "A" ? "User A" : "User B";
+  const myPartnerLabel = partnerId === ida ? nameA : nameB;
+  const partnerName    = myPartnerLabel;
 
   const updateList = (next) => sock?.emit("stage5:list", { items: next });
   const add = () => {
@@ -170,8 +171,9 @@ function ReviewPhase({ me, state }) {
   const [bonusDraft, setBonusDraft] = useState("");
   const sock        = getSocket();
   const s5          = state.stage5;
-  const partnerId   = me.id === "A" ? "B" : "A";
-  const partnerName = partnerId === "A" ? "User A" : "User B";
+  const { ida, idb, nameA, nameB } = state.meta;
+  const partnerId   = me.id === ida ? idb : ida;
+  const partnerName = partnerId === ida ? nameA : nameB;
 
   // I review what PARTNER wrote about MY cooking
   const listToReview     = s5.lists[partnerId] || [];
@@ -372,9 +374,10 @@ function CircularProgress({ pct, colorClass }) {
 
 function ResultsPhase({ me, state }) {
   const s5          = state.stage5;
-  const partnerId   = me.id === "A" ? "B" : "A";
-  const myName      = me.id === "A" ? "User A" : "User B";
-  const partnerName = partnerId === "A" ? "User A" : "User B";
+  const { ida, idb, nameA, nameB } = state.meta;
+  const partnerId   = me.id === ida ? idb : ida;
+  const myName      = me.id === ida ? nameA : nameB;
+  const partnerName = partnerId === ida ? nameA : nameB;
 
   const myScore      = computeScore(s5, me.id, partnerId);
   const partnerScore = computeScore(s5, partnerId, me.id);

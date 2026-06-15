@@ -1,11 +1,14 @@
 import { redis } from "./redisClient.js";
 const KEY = "session:main";
 
-export const IDA = process.env.USER_A_ID ?? "A";
-export const IDB = process.env.USER_B_ID ?? "B";
+export const IDA   = process.env.USER_A_ID   ?? "A";
+export const IDB   = process.env.USER_B_ID   ?? "B";
+export const NAMEA = process.env.USER_A_NAME ?? "User A";
+export const NAMEB = process.env.USER_B_NAME ?? "User B";
 
 export function defaultState() {
   return {
+    meta: { ida: IDA, idb: IDB, nameA: NAMEA, nameB: NAMEB },
     phase: "waiting",
     presence: { [IDA]: { online: false }, [IDB]: { online: false } },
     begin: { [IDA]: false, [IDB]: false },
@@ -45,7 +48,7 @@ export async function loadState() {
   const raw = await redis.get(KEY);
   if (!raw) { const s = defaultState(); await redis.set(KEY, JSON.stringify(s)); return s; }
   const s = JSON.parse(raw);
-  if (!(IDA in s.presence) || !(IDB in s.presence)) return resetState();
+  if (!s.meta || !(IDA in s.presence) || !(IDB in s.presence)) return resetState();
   return s;
 }
 
