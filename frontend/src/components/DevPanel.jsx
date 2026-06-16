@@ -22,10 +22,10 @@ export default function DevPanel({ state, me }) {
         phase: <span className="text-dn-text">{state.phase}</span>
       </div>
       <div className="text-dn-muted mb-0.5">
-        A: <span className="text-dn-text">{String(state.presence.A.online)}</span>
+        A: <span className="text-dn-text">{String(state.presence[state.meta.ida]?.online)}</span>
       </div>
       <div className="text-dn-muted mb-0.5">
-        B: <span className="text-dn-text">{String(state.presence.B.online)}</span>
+        B: <span className="text-dn-text">{String(state.presence[state.meta.idb]?.online)}</span>
       </div>
       <div className="text-dn-muted mb-2">
         t: <span className="text-dn-text">{label}</span>
