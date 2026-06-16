@@ -24,7 +24,7 @@ test("lobby stays until both begin", () => {
   s.begin.A = true; // only one
   expect(computePhase(s, after6)).toBe("lobby");
   s.begin.B = true;
-  expect(computePhase(s, after6)).toBe("stage1");
+  expect(computePhase(s, after6)).toBe("stage5");
 });
 
 test("lobby starts whenever both begin regardless of time", () => {
@@ -32,16 +32,16 @@ test("lobby starts whenever both begin regardless of time", () => {
   s.presence.A.online = true; s.presence.B.online = true;
   s.begin.A = true; s.begin.B = true;
   const before = new Date("2026-06-15T05:00:00Z"); // 10:00 GMT+5, before old gate
-  expect(computePhase(s, before)).toBe("stage1");
+  expect(computePhase(s, before)).toBe("stage5");
 });
 
-test("stage1 -> stage2 when both done with same game and both ack", () => {
+test("stage1 -> done when both done with same game and both ack", () => {
   const s = base(); s.phase = "stage1";
   s.stage1.A_done = true; s.stage1.B_done = true;
   s.stage1.A_game = "Portal 2"; s.stage1.B_game = "Portal 2";
   s.stage1.winner_game = "Portal 2";
   s.stage1.winner_ack = { A: true, B: true };
-  expect(computePhase(s, after6)).toBe("stage2");
+  expect(computePhase(s, after6)).toBe("done");
 });
 
 test("stage1 stays when both done with same game but not acked", () => {
@@ -67,13 +67,13 @@ test("stage1 stays after rps winner until both ack", () => {
   expect(computePhase(s, after6)).toBe("stage1");
 });
 
-test("stage1 -> stage2 after rps winner and both ack", () => {
+test("stage1 -> done after rps winner and both ack", () => {
   const s = base(); s.phase = "stage1";
   s.stage1.A_done = true; s.stage1.B_done = true;
   s.stage1.A_game = "Portal 2"; s.stage1.B_game = "It Takes Two";
   s.stage1.winner_game = "Portal 2";
   s.stage1.winner_ack = { A: true, B: true };
-  expect(computePhase(s, after6)).toBe("stage2");
+  expect(computePhase(s, after6)).toBe("done");
 });
 
 test("stage2 -> stage3 needs answers+plan+reveal", () => {
@@ -84,10 +84,10 @@ test("stage2 -> stage3 needs answers+plan+reveal", () => {
   expect(computePhase(s, after6)).toBe("stage3");
 });
 
-test("stage4 -> stage5 when both downloaded", () => {
+test("stage4 -> stage1 when both downloaded", () => {
   const s = base(); s.phase = "stage4";
   s.stage4.downloaded.A = true; s.stage4.downloaded.B = true;
-  expect(computePhase(s, after6)).toBe("stage5");
+  expect(computePhase(s, after6)).toBe("stage1");
 });
 
 test("stage5 stays until both complete", () => {
@@ -96,10 +96,10 @@ test("stage5 stays until both complete", () => {
   expect(computePhase(s, after6)).toBe("stage5");
 });
 
-test("stage5 -> done when both complete", () => {
+test("stage5 -> stage2 when both complete", () => {
   const s = base(); s.phase = "stage5";
   s.stage5.complete.A = true; s.stage5.complete.B = true;
-  expect(computePhase(s, after6)).toBe("done");
+  expect(computePhase(s, after6)).toBe("stage2");
 });
 
 test("phase never moves backward", () => {
