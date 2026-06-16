@@ -516,8 +516,9 @@ function ResultsPhase({ me, state }) {
 
 export default function Stage5Culinary({ me, state }) {
   const s5 = state.stage5;
-  const bothWritingDone = s5.writingDone.A && s5.writingDone.B;
-  const bothReviewDone  = s5.reviewDone.A  && s5.reviewDone.B;
+  const { ida, idb } = state.meta;
+  const bothWritingDone = s5.writingDone[ida] && s5.writingDone[idb];
+  const bothReviewDone  = s5.reviewDone[ida]  && s5.reviewDone[idb];
   if (bothReviewDone)  return <ResultsPhase  me={me} state={state} />;
   if (bothWritingDone) return <ReviewPhase   me={me} state={state} />;
   return <WritingPhase me={me} state={state} />;
