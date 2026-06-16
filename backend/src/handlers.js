@@ -2,6 +2,8 @@ import { loadState, saveState, IDA, IDB } from "./state.js";
 import { computePhase } from "./phase.js";
 import { scoreQuiz } from "./quiz.js";
 
+const memoryPhotos = new Map();
+
 // Single-backend, single-session app: serialize all read-modify-write cycles on
 // session:main through one in-process queue so concurrent socket events (the two
 // users acting simultaneously, or a disconnect racing a stage mutation) can't
@@ -18,6 +20,19 @@ export function mutate(io, fn) {
     return s;
   });
   return mutateChain;
+}
+
+function tryScore(s) {
+  if (s.stage2.answers[IDA] && s.stage2.answers[IDB]
+      && s.stage2.dontWant[IDA] !== null && s.stage2.dontWant[IDB] !== null
+      && !s.stage2.result) {
+    const exclusions = new Set([
+      ...(s.stage2.dontWant[IDA] || []),
+      ...(s.stage2.dontWant[IDB] || []),
+    ]);
+    s.stage2.result = scoreQuiz(mergeAnswers(s.stage2.answers[IDA], s.stage2.answers[IDB]), exclusions);
+    s.stage2.plan.destination = s.stage2.result.country;
+  }
 }
 
 export function registerHandlers(io, socket, user) {
@@ -66,10 +81,7 @@ export function registerHandlers(io, socket, user) {
 
   socket.on("stage2:answers", ({ answers }) => mutate(io, (s) => {
     s.stage2.answers[id] = answers;
-    if (s.stage2.answers[IDA] && s.stage2.answers[IDB] && !s.stage2.result) {
-      s.stage2.result = scoreQuiz(mergeAnswers(s.stage2.answers[IDA], s.stage2.answers[IDB]));
-      s.stage2.plan.destination = s.stage2.result.country;
-    }
+    tryScore(s);
   }));
 
   socket.on("stage2:plan", ({ plan }) => mutate(io, (s) => {
@@ -78,7 +90,10 @@ export function registerHandlers(io, socket, user) {
 
   socket.on("stage2:dontWant", ({ list }) => mutate(io, (s) => {
     s.stage2.dontWant[id] = list;
-    if (s.stage2.dontWant[IDA] && s.stage2.dontWant[IDB]) s.stage2.dontWant.revealed = true;
+    if (s.stage2.dontWant[IDA] !== null && s.stage2.dontWant[IDB] !== null) {
+      s.stage2.dontWant.revealed = true;
+    }
+    tryScore(s);
   }));
 
   socket.on("stage2:planSubmit", () => mutate(io, (s) => { s.stage2.planSubmitted[id] = true; }));
@@ -125,6 +140,18 @@ export function registerHandlers(io, socket, user) {
   socket.on("stage5:complete", () => mutate(io, (s) => {
     s.stage5.complete[id] = true;
   }));
+
+  socket.on("memory:photo", ({ dataUrl }) => {
+    memoryPhotos.set(id, dataUrl);
+    const photoA = memoryPhotos.get(IDA);
+    const photoB = memoryPhotos.get(IDB);
+    if (photoA && photoB) {
+      io.to("main").emit("memory:ready", { [IDA]: photoA, [IDB]: photoB });
+      memoryPhotos.clear();
+    } else {
+      socket.emit("memory:waiting");
+    }
+  });
 
   // dev only
   socket.on("dev:setPhase", ({ phase }) => mutate(io, (s) => { s.phase = phase; }));

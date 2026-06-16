@@ -2,7 +2,7 @@
 import { getSocket } from "../socket.js";
 import { useCountdown } from "../hooks/useCountdown.js";
 
-const PHASES = ["waiting", "lobby", "stage1", "stage2", "stage3", "stage4", "done"];
+const PHASES = ["waiting", "lobby", "stage1", "stage2", "stage3", "stage4", "stage5", "done"];
 
 export default function DevPanel({ state, me }) {
   const { label } = useCountdown();

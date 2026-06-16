@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { getSocket } from "../socket.js";
 import { QUESTIONS } from "../data/questions.js";
+import { COUNTRIES, MAX_EXCLUSIONS } from "../data/countries.js";
 import Stage2Result from "./Stage2Result.jsx";
 import Stage2TripPlanner from "./Stage2TripPlanner.jsx";
 
@@ -27,6 +28,8 @@ const Q_ICONS = {
 export default function Stage2Quiz({ me, state }) {
   const [ans, setAns] = useState({});
   const [currentQ, setCurrentQ] = useState(0);
+  const [excluded, setExcluded] = useState([]);
+  const EXCLUSION_STEP = QUESTIONS.length; // step index after all questions
 
   const mySubmitted  = !!state.stage2.answers[me.id];
   const bothAnswered = state.stage2.answers[state.meta.ida] && state.stage2.answers[state.meta.idb];
@@ -94,11 +97,21 @@ export default function Stage2Quiz({ me, state }) {
     const cur = a[q] || [];
     return { ...a, [q]: cur.includes(val) ? cur.filter(x => x !== val) : [...cur, val] };
   });
-  const submit   = () => getSocket()?.emit("stage2:answers", { answers: ans });
+  const toggleExclusion = (name) => setExcluded(prev =>
+    prev.includes(name)
+      ? prev.filter(x => x !== name)
+      : prev.length < MAX_EXCLUSIONS ? [...prev, name] : prev
+  );
+  const submit = () => {
+    const sock = getSocket();
+    sock?.emit("stage2:answers", { answers: ans });
+    sock?.emit("stage2:dontWant", { list: excluded });
+  };
   const complete = QUESTIONS.every(q => q.multi ? (ans[q.id]?.length > 0) : ans[q.id]);
 
-  // Progress: based on current question index
-  const myProgressPct = Math.round((currentQ / QUESTIONS.length) * 100);
+  // Progress: currentQ across questions + exclusion step
+  const totalSteps = QUESTIONS.length + 1;
+  const myProgressPct = Math.round((currentQ / totalSteps) * 100);
   const partnerAnswered = bothAnswered;
   const partnerProgressPct = mySubmitted ? 100 : (partnerAnswered ? 100 : 30);
   const partnerDone = partnerAnswered;
@@ -106,15 +119,18 @@ export default function Stage2Quiz({ me, state }) {
   const myName = me.name || "You";
   const partnerName = me.id === state.meta.ida ? state.meta.nameB : state.meta.nameA;
 
-  const q = QUESTIONS[currentQ];
-  const cur = ans[q.id];
-  const icon = Q_ICONS[q.id] || "help_outline";
-  const isAnswered = q.multi ? (cur?.length > 0) : !!cur;
+  const isExclusionStep = currentQ === EXCLUSION_STEP;
+  const q = !isExclusionStep ? QUESTIONS[currentQ] : null;
+  const cur = q ? ans[q.id] : null;
+  const icon = q ? (Q_ICONS[q.id] || "help_outline") : "block";
+  const isAnswered = isExclusionStep ? true : (q.multi ? (cur?.length > 0) : !!cur);
   const isLast = currentQ === QUESTIONS.length - 1;
 
   const handleNext = () => {
-    if (isLast) {
+    if (isExclusionStep) {
       submit();
+    } else if (isLast) {
+      setCurrentQ(EXCLUSION_STEP);
     } else {
       setCurrentQ(i => i + 1);
     }
@@ -141,7 +157,9 @@ export default function Stage2Quiz({ me, state }) {
         {/* Dual progress bar */}
         <div className="w-full mb-md">
           <div className="flex justify-between items-end mb-base">
-            <span className="font-label-caps text-label-caps text-primary">Question {currentQ + 1}/{QUESTIONS.length}</span>
+            <span className="font-label-caps text-label-caps text-primary">
+              {isExclusionStep ? "Extra" : `Question ${currentQ + 1}/${QUESTIONS.length}`}
+            </span>
             <span className="font-label-caps text-label-caps text-secondary">Stage 2</span>
           </div>
           <div className="h-2 w-full bg-surface-container-high rounded-full overflow-hidden flex relative">
@@ -168,60 +186,106 @@ export default function Stage2Quiz({ me, state }) {
           </div>
         </div>
 
-        {/* Single question card */}
+        {/* Question card */}
         <div className="w-full flex-grow flex flex-col justify-center">
-          <div
-            className={`glass-card rounded-lg p-md w-full flex flex-col items-center mb-xl transition-all duration-300 ${isAnswered ? "glow-active" : ""}`}
-          >
-            {/* Icon badge */}
-            <div className="w-16 h-16 rounded-full bg-surface-container-highest border border-white/10 flex items-center justify-center mb-md shadow-[0_0_15px_rgba(0,0,0,0.2)]">
-              <span
-                className="material-symbols-outlined text-primary text-[32px]"
-                style={{ fontVariationSettings: "'FILL' 1" }}
-              >
-                {icon}
-              </span>
-            </div>
-
-            {/* Question number + text */}
-            <p className="font-label-caps text-label-caps text-primary mb-xs">
-              {currentQ + 1} / {QUESTIONS.length}
-            </p>
-            <h3 className="font-display-lg-mobile text-display-lg-mobile text-center text-on-surface mb-lg">
-              {q.text}
-            </h3>
-
-            {/* Options */}
-            <div className="w-full flex flex-col gap-base">
-              {q.opts.map(([val, label]) => {
-                const active = q.multi ? (cur || []).includes(val) : cur === val;
-                return (
-                  <button
-                    key={val}
-                    onClick={() => q.multi ? toggle(q.id, val) : set(q.id, val)}
-                    className={`w-full py-4 px-gutter rounded-full border transition-all duration-200 flex items-center justify-between group active:scale-95
-                      ${active
-                        ? "border-primary bg-primary/10 shadow-[0_0_15px_rgba(255,176,207,0.2)]"
-                        : "border-white/15 bg-surface-container-low hover:bg-surface-container hover:border-primary/50"
-                      }`}
-                  >
-                    <span className={`font-title-sm text-title-sm transition-colors ${active ? "text-primary" : "text-on-surface group-hover:text-primary"}`}>
-                      {label}
-                    </span>
-                    <div className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors flex-shrink-0
-                      ${active ? "border-primary bg-primary" : "border-outline group-hover:border-primary"}`}>
-                      <span
-                        className={`material-symbols-outlined text-[16px] transition-colors ${active ? "text-on-primary" : "text-transparent"}`}
-                        style={{ fontVariationSettings: "'FILL' 1, 'wght' 700" }}
-                      >
-                        check
+          {isExclusionStep ? (
+            <div className="glass-card rounded-lg p-md w-full flex flex-col items-center mb-xl">
+              {/* Icon badge */}
+              <div className="w-16 h-16 rounded-full bg-surface-container-highest border border-white/10 flex items-center justify-center mb-md shadow-[0_0_15px_rgba(0,0,0,0.2)]">
+                <span className="material-symbols-outlined text-primary text-[32px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                  block
+                </span>
+              </div>
+              <p className="font-label-caps text-label-caps text-primary mb-xs">Optional · {excluded.length}/{MAX_EXCLUSIONS}</p>
+              <h3 className="font-display-lg-mobile text-display-lg-mobile text-center text-on-surface mb-xs">
+                Countries you'd rather skip
+              </h3>
+              <p className="font-body-md text-body-md text-on-surface-variant text-center mb-lg">
+                Select up to {MAX_EXCLUSIONS} destinations to exclude from your match.
+              </p>
+              <div className="w-full grid grid-cols-2 gap-base max-h-[420px] overflow-y-auto pr-1">
+                {COUNTRIES.map(({ name, flag }) => {
+                  const active = excluded.includes(name);
+                  const atLimit = excluded.length >= MAX_EXCLUSIONS && !active;
+                  return (
+                    <button
+                      key={name}
+                      onClick={() => toggleExclusion(name)}
+                      disabled={atLimit}
+                      className={`py-3 px-sm rounded-xl border transition-all duration-200 flex items-center gap-sm active:scale-95 disabled:opacity-30
+                        ${active
+                          ? "border-error bg-error/10 shadow-[0_0_12px_rgba(255,100,100,0.2)]"
+                          : "border-white/15 bg-surface-container-low hover:bg-surface-container hover:border-white/30"
+                        }`}
+                    >
+                      <span className="text-xl flex-shrink-0">{flag}</span>
+                      <span className={`font-body-md text-body-md text-left leading-tight ${active ? "text-error" : "text-on-surface"}`}>
+                        {name}
                       </span>
-                    </div>
-                  </button>
-                );
-              })}
+                      {active && (
+                        <span className="material-symbols-outlined text-error text-[16px] ml-auto flex-shrink-0" style={{ fontVariationSettings: "'FILL' 1" }}>
+                          close
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div
+              className={`glass-card rounded-lg p-md w-full flex flex-col items-center mb-xl transition-all duration-300 ${isAnswered ? "glow-active" : ""}`}
+            >
+              {/* Icon badge */}
+              <div className="w-16 h-16 rounded-full bg-surface-container-highest border border-white/10 flex items-center justify-center mb-md shadow-[0_0_15px_rgba(0,0,0,0.2)]">
+                <span
+                  className="material-symbols-outlined text-primary text-[32px]"
+                  style={{ fontVariationSettings: "'FILL' 1" }}
+                >
+                  {icon}
+                </span>
+              </div>
+
+              {/* Question number + text */}
+              <p className="font-label-caps text-label-caps text-primary mb-xs">
+                {currentQ + 1} / {QUESTIONS.length}
+              </p>
+              <h3 className="font-display-lg-mobile text-display-lg-mobile text-center text-on-surface mb-lg">
+                {q.text}
+              </h3>
+
+              {/* Options */}
+              <div className="w-full flex flex-col gap-base">
+                {q.opts.map(([val, label]) => {
+                  const active = q.multi ? (cur || []).includes(val) : cur === val;
+                  return (
+                    <button
+                      key={val}
+                      onClick={() => q.multi ? toggle(q.id, val) : set(q.id, val)}
+                      className={`w-full py-4 px-gutter rounded-full border transition-all duration-200 flex items-center justify-between group active:scale-95
+                        ${active
+                          ? "border-primary bg-primary/10 shadow-[0_0_15px_rgba(255,176,207,0.2)]"
+                          : "border-white/15 bg-surface-container-low hover:bg-surface-container hover:border-primary/50"
+                        }`}
+                    >
+                      <span className={`font-title-sm text-title-sm transition-colors ${active ? "text-primary" : "text-on-surface group-hover:text-primary"}`}>
+                        {label}
+                      </span>
+                      <div className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors flex-shrink-0
+                        ${active ? "border-primary bg-primary" : "border-outline group-hover:border-primary"}`}>
+                        <span
+                          className={`material-symbols-outlined text-[16px] transition-colors ${active ? "text-on-primary" : "text-transparent"}`}
+                          style={{ fontVariationSettings: "'FILL' 1, 'wght' 700" }}
+                        >
+                          check
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Next / Submit button */}
@@ -230,7 +294,7 @@ export default function Stage2Quiz({ me, state }) {
           disabled={!isAnswered}
           className="w-full py-4 px-gutter rounded-full bg-gradient-to-r from-primary-container to-primary text-on-primary font-title-sm text-title-sm font-bold disabled:opacity-40 hover:opacity-90 active:scale-95 transition-all duration-200 shadow-[0_0_20px_rgba(255,176,207,0.3)]"
         >
-          {isLast ? "Lock in my answers" : "Next"}
+          {isExclusionStep ? "Lock in my answers" : "Next"}
         </button>
 
         {/* Player status row */}

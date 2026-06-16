@@ -233,7 +233,7 @@ export const ANSWER_ATTRS = {
 
 const REGION_KEYS = new Set(["europe","asia","americas","middle_east","africa","oceania"]);
 
-export function scoreQuiz(answers) {
+export function scoreQuiz(answers, exclusions = new Set()) {
   const desire = {};
   const preferredRegions = [];
 
@@ -246,8 +246,13 @@ export function scoreQuiz(answers) {
     }
   }
 
-  let best = COUNTRIES[0], bestScore = -1;
-  for (const c of COUNTRIES) {
+  const candidates = exclusions.size > 0
+    ? COUNTRIES.filter(c => !exclusions.has(c.country))
+    : COUNTRIES;
+  const pool = candidates.length > 0 ? candidates : COUNTRIES;
+
+  let best = pool[0], bestScore = -1;
+  for (const c of pool) {
     let score = 0;
     for (const [k, v] of Object.entries(desire)) {
       score += (c.attrs[k] || 0) * v;

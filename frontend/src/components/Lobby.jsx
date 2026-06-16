@@ -108,7 +108,7 @@ export default function Lobby({ me, state }) {
           <div className="col-span-2 glass-panel rounded-xl p-4">
             <h3 className="font-title-sm text-title-sm text-on-surface mb-4">Warmup Actions</h3>
             <div className="flex justify-around">
-              {[["❤️","heart"],["🥧","pie"],["✨","heart"]].map(([emoji, kind]) => (
+              {[["❤️","heart"],["🥧","pie"]].map(([emoji, kind]) => (
                 <button key={emoji}
                   onClick={() => throwIt(kind)}
                   className="w-16 h-16 rounded-full glass-panel hover:bg-white/10 active:scale-90 transition-all flex items-center justify-center text-2xl">
