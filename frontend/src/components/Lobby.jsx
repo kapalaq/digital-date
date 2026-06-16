@@ -1,5 +1,5 @@
 // frontend/src/components/Lobby.jsx
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { getSocket } from "../socket.js";
 import { useCountdown } from "../hooks/useCountdown.js";
 import Projectiles from "./Projectiles.jsx";
@@ -7,9 +7,10 @@ import Projectiles from "./Projectiles.jsx";
 export default function Lobby({ me, state }) {
   const { label, done } = useCountdown();
   const { ida, idb, nameA, nameB } = state.meta;
-  const [hitEffects, setHitEffects]   = useState(() => ({ [ida]: null, [idb]: null }));
-  const [isDodging,  setIsDodging]    = useState(false);
-  const isDodgingRef = useRef(false);
+  const [hitEffects, setHitEffects]       = useState(() => ({ [ida]: null, [idb]: null }));
+  const [isDodging,  setIsDodging]        = useState(false);
+  const isDodgingRef      = useRef(false);
+  const partnerDodgeUntil = useRef(0);
 
   const throwIt = (kind) => getSocket()?.emit("lobby:throw", { kind });
   const begin   = () => getSocket()?.emit("lobby:begin");
@@ -19,11 +20,25 @@ export default function Lobby({ me, state }) {
     if (isDodgingRef.current) return;
     setIsDodging(true);
     isDodgingRef.current = true;
+    getSocket()?.emit("lobby:dodge");
     setTimeout(() => { setIsDodging(false); isDodgingRef.current = false; }, 1500);
   };
 
+  useEffect(() => {
+    const sock = getSocket();
+    if (!sock) return;
+    const onPartnerDodge = ({ from }) => {
+      if (from !== me.id) partnerDodgeUntil.current = Date.now() + 1500;
+    };
+    sock.on("lobby:dodge", onPartnerDodge);
+    return () => sock.off("lobby:dodge", onPartnerDodge);
+  }, [me.id]);
+
   const onHit = useCallback((kind, target) => {
-    if (target === me.id && isDodgingRef.current) return;
+    const dodging = target === me.id
+      ? isDodgingRef.current
+      : Date.now() < partnerDodgeUntil.current;
+    if (dodging) return;
     const ts = Date.now();
     setHitEffects(h => ({ ...h, [target]: { kind, ts } }));
     setTimeout(() => setHitEffects(h => {

@@ -45,6 +45,10 @@ export function registerHandlers(io, socket, user) {
     io.to("main").emit("lobby:projectile", { from: id, kind });
   });
 
+  socket.on("lobby:dodge", () => {
+    io.to("main").emit("lobby:dodge", { from: id });
+  });
+
   socket.on("stage1:confirm", ({ game } = {}) => mutate(io, (s) => {
     s.stage1[`${id}_done`] = true;
     s.stage1[`${id}_game`] = game || null;
