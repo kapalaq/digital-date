@@ -4,24 +4,24 @@ import { getSocket } from "../socket.js";
 
 const GAMES = [
   {
-    name: "It Takes Two",
-    desc: "A story of love, trust, and cooperation.",
+    name: "Don't starve together",
+    desc: "Fight, Farm, Build and Explore Together.",
     icon: "favorite",
     color: "primary",
     border: "border-primary/40",
     shadow: "shadow-[0_0_30px_rgba(255,176,207,0.15)]",
   },
   {
-    name: "Unravel Two",
-    desc: "Two yarns, one adventure.",
+    name: "Board Games Arena",
+    desc: "Online date with offline vibes.",
     icon: "auto_awesome",
     color: "secondary",
     border: "border-secondary/40",
     shadow: "shadow-[0_0_30px_rgba(202,190,255,0.15)]",
   },
   {
-    name: "Portal 2",
-    desc: "Think with portals. Together.",
+    name: "Overcooked 2",
+    desc: "Chop. Grill. Run. Fun!",
     icon: "local_fire_department",
     color: "tertiary",
     border: "border-tertiary/40",

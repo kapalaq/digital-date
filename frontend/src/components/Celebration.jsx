@@ -222,7 +222,7 @@ async function combinAndDownload(photoA, photoB, meta) {
   ctx.font = "bold 22px sans-serif";
   ctx.textAlign = "center";
   const dateStr = new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
-  ctx.fillText(`♥  ${dateStr}  ♥`, totalW / 2, PADDING + 28);
+  ctx.fillText(`${dateStr} (14 months)`, totalW / 2, PADDING + 28);
 
   // photos
   const yPhoto = PADDING + 48;
