@@ -8,7 +8,7 @@ export const QUESTIONS = [
   { id:"q7", text:"Food adventurousness", opts:[["try_anything","Try anything"],["some_restrictions","Some restrictions"],["familiar","Stick to familiar"]] },
   { id:"q8", text:"Nightlife importance", opts:[["nightlife_yes","Yes"],["no","No"],["sometimes","Sometimes"]] },
   { id:"q9", text:"Language barrier tolerance", opts:[["fine","Fine"],["english","Prefer English-friendly"]] },
-  { id:"q10", text:"Visa-free preferred?", opts:[["yes","Yes"],["doesnt_matter","Doesn't matter"]] },
+  { id:"q10", text:"Visa-free preferred?", opts:[["visa_free","Yes"],["visa_any","Doesn't matter"]] },
   { id:"q11", text:"Preferred region", opts:[["europe","Europe"],["asia","Asia"],["americas","Americas"],["middle_east","Middle East"],["africa","Africa"],["oceania","Oceania"]] },
   { id:"q12", text:"Activities (pick any)", multi:true, opts:[["hiking","Hiking"],["museums","Museums"],["beaches","Beaches"],["shopping","Shopping"],["local_markets","Local markets"],["food_tours","Food tours"]] },
   { id:"q13", text:"Crowd preference", opts:[["tourist_hotspot","Tourist hotspot"],["hidden_gem","Hidden gem"]] },
