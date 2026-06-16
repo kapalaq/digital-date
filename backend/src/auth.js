@@ -9,7 +9,7 @@ const USERS = {
 export function login(username, password) {
   const u = USERS[username];
   if (!u || u.pass !== password) return null;
-  return jwt.sign({ id: u.id, name: u.name }, SECRET, { expiresIn: "12h" });
+  return jwt.sign({ id: u.id, name: u.name }, SECRET, { expiresIn: "20m" });
 }
 
 export function verify(token) {
