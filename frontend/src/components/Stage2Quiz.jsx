@@ -42,7 +42,13 @@ export default function Stage2Quiz({ me, state }) {
           </div>
         </header>
         <main className="pt-24 pb-xl px-safe-margin md:px-xl max-w-[1200px] mx-auto">
-          <Stage2Result result={state.stage2.result} />
+          <Stage2Result
+            result={state.stage2.result}
+            answersA={state.stage2.answers[state.meta.ida]}
+            answersB={state.stage2.answers[state.meta.idb]}
+            nameA={state.meta.nameA}
+            nameB={state.meta.nameB}
+          />
           <Stage2TripPlanner me={me} state={state} />
         </main>
       </div>
