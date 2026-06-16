@@ -1,5 +1,5 @@
 function parseDateStartHourUTC() {
-  const raw = process.env.DATE_START_TIME_GMT ?? "1300";
+  const raw = process.env.DATE_START_TIME_GMT ?? "1700";
   const h = Math.floor(parseInt(raw, 10) / 100);
   const m = parseInt(raw, 10) % 100;
   return { h, m };

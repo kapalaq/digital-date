@@ -7,3 +7,4 @@ dist/
 **/*.png
 .codex/
 backend/.env
+docs/superpowers/plans/2026-06-15-stitch-redesign.md
